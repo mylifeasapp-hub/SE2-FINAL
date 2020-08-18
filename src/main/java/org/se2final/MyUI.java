@@ -11,6 +11,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import org.se2final.components.MenuBand;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -29,13 +30,15 @@ public class MyUI extends UI {
         final TextField name = new TextField();
         name.setCaption("Type your name here:");
 
+        final MenuBand menuBand = new MenuBand();
+
         Button button = new Button("Click Me");
         button.addClickListener(e -> {
             layout.addComponent(new Label("Thanks " + name.getValue() 
                     + ", it works!"));
         });
         
-        layout.addComponents(name, button);
+        layout.addComponents(menuBand, name, button);
         
         setContent(layout);
     }
