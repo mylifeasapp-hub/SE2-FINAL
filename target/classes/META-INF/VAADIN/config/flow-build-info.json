@@ -1,9 +1,0 @@
-{
-  "compatibilityMode": false,
-  "productionMode": false,
-  "npmFolder": "/Users/danielprost/IdeaProjects/SE2-FINAL",
-  "generatedFolder": "/Users/danielprost/IdeaProjects/SE2-FINAL/target/frontend",
-  "frontendFolder": "/Users/danielprost/IdeaProjects/SE2-FINAL/frontend",
-  "pnpm.enable": false,
-  "require.home.node": false
-}
