@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="CARPOOL:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>CARPOOL</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="CARPOOL-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="CARPOOL:war exploded" />
+    </root>
+  </artifact>
+</component>
