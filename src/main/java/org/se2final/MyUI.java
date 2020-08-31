@@ -4,14 +4,13 @@ import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import org.se2final.components.MenuBand;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.*;
+import com.vaadin.ui.*;
+import org.se2final.service.konstanten.Roles;
+import org.se2final.service.konstanten.Views;
+import org.se2final.views.Landing;
+import org.se2final.views.Main;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -22,25 +21,22 @@ import org.se2final.components.MenuBand;
  */
 @Theme("mytheme")
 public class MyUI extends UI {
+    private Navigator navi;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final VerticalLayout layout = new VerticalLayout();
-        
-        final TextField name = new TextField();
-        name.setCaption("Type your name here:");
+        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(900);
 
-        final MenuBand menuBand = new MenuBand();
+        navi = new Navigator( this , this);
+        VaadinSession.getCurrent().setAttribute(Roles.CURRENT, "");
 
-        Button button = new Button("Click Me");
-        button.addClickListener(e -> {
-            layout.addComponent(new Label("Thanks " + name.getValue() 
-                    + ", it works!"));
-        });
-        
-        layout.addComponents(menuBand, name, button);
-        
-        setContent(layout);
+        navi.addView(Views.START, Main.class );
+        navi.addView( Views.LANDING, Landing.class);
+
+
+
+        if(VaadinSession.getCurrent().getAttribute(Roles.CURRENT) != "") UI.getCurrent().getNavigator().navigateTo( Views.LANDING );
+        else UI.getCurrent().getNavigator().navigateTo( Views.START );
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
