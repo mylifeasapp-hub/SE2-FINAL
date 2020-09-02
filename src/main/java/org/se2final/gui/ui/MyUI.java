@@ -1,16 +1,16 @@
-package org.se2final;
+package org.se2final.gui.ui;
 
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinServlet;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.*;
+import com.vaadin.ui.*;
+import org.se2final.gui.ui.service.konstanten.Roles;
+import org.se2final.gui.ui.service.konstanten.Views;
+import org.se2final.gui.ui.views.Landing;
+import org.se2final.gui.ui.views.Main;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -21,23 +21,23 @@ import com.vaadin.ui.VerticalLayout;
  */
 @Theme("mytheme")
 public class MyUI extends UI {
+    private Navigator navi;
+
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        final VerticalLayout layout = new VerticalLayout();
-        
-        final TextField name = new TextField();
-        name.setCaption("Type your name here:");
+        VaadinSession.getCurrent().getSession().setMaxInactiveInterval(900);
 
-        Button button = new Button("Click Me");
-        button.addClickListener(e -> {
-            layout.addComponent(new Label("Thanks " + name.getValue() 
-                    + ", it works!"));
-        });
-        
-        layout.addComponents(name, button);
-        
-        setContent(layout);
+        navi = new Navigator( this , this);
+        VaadinSession.getCurrent().setAttribute(Roles.EXTERN, 0);
+
+        navi.addView(Views.START, Main.class );
+        navi.addView( Views.LANDING, Landing.class);
+
+
+
+        if(VaadinSession.getCurrent().getAttribute(Roles.CURRENT) != null) UI.getCurrent().getNavigator().navigateTo( Views.LANDING );
+        else UI.getCurrent().getNavigator().navigateTo( Views.START );
     }
 
     @WebServlet(urlPatterns = "/*", name = "MyUIServlet", asyncSupported = true)
