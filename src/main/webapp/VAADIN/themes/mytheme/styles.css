@@ -2,6 +2,10 @@
 	border-bottom: 2px solid #2da6ff;
 }
 
+.v-grid {
+	color: black;
+}
+
 /**
  * Checks if a list contains a certain value.
  * 

@@ -58,6 +58,10 @@ $v-panel-border: 2px solid v-shade;
   border-bottom: 2px solid #2da6ff;
 }
 
+.v-grid{
+  color: black;
+}
+
 @import "../valo/valo";
 
 @mixin mytheme {

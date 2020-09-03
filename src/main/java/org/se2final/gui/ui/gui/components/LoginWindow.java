@@ -5,7 +5,6 @@ import org.se2final.control.LoginCheck;
 import org.se2final.control.RegCheck;
 import org.se2final.control.exceptions.DatabaseException;
 import org.se2final.control.exceptions.NoSuchUserOrPassword;
-import org.se2final.gui.ui.service.konstanten.Views;
 import org.se2final.gui.ui.views.Main;
 
 import java.sql.SQLException;
