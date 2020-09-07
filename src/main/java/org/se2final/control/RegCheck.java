@@ -39,7 +39,6 @@ public class RegCheck {
     }
 
     public static String getGender(String regAnrede){
-        System.out.println(regAnrede);
         if(regAnrede.matches("Frau")){
             return "f";
         }
@@ -48,6 +47,18 @@ public class RegCheck {
         }
         else{
             return "d";
+        }
+    }
+
+    public static String getGenderFullname(String regAnrede){
+        if(regAnrede.matches("f")){
+            return "Frau";
+        }
+        else if(regAnrede.matches("m")){
+            return "Herr";
+        }
+        else{
+            return "-";
         }
     }
 

@@ -32,7 +32,7 @@ public class ReservationWindow extends Window {
 
         DateTimeField resDateTime = new DateTimeField("Reservierungszeit");
         resDateTime.setValue(LocalDateTime.now());
-        resDateTime.setDateFormat("dd.MM.yyyy hh:mm");
+        resDateTime.setDateFormat("dd.MM.yyyy HH:mm");
 
 
 
@@ -51,6 +51,7 @@ public class ReservationWindow extends Window {
         center();
         setClosable(false);
         setResizable(false);
+        setModal(true);
 
         //Click Listener
         cancelButton.addClickListener(event -> this.close());
@@ -66,6 +67,8 @@ public class ReservationWindow extends Window {
             ReservationDAO.getInstance().sendReservation(newReservation);
 
             this.close();
+
+            Notification.show("Erfolg:", "Reservierungsanfrage war erfolgreich!", Notification.Type.HUMANIZED_MESSAGE);
         });
     }
 }

@@ -6,6 +6,7 @@ import java.sql.Date;
 public class Reservation {
     private int userID;
     private int carID;
+    private int workID;
     private Date resDate;
     private Time resTime;
     private String resStatus;
@@ -58,5 +59,13 @@ public class Reservation {
 
     public void setResStatus(String resStatus) {
         this.resStatus = resStatus;
+    }
+
+    public int getWorkID() {
+        return workID;
+    }
+
+    public void setWorkID(int workID) {
+        this.workID = workID;
     }
 }
