@@ -14,7 +14,10 @@ public class Menu extends MenuBar {
     public Menu(){
         MenuBar.MenuItem item1 = this.addItem("", VaadinIcons.MENU, null);
 
-        item1.addItem("Mein Profil", VaadinIcons.SPECIALIST, (MenuBar.Command) menuItem -> UI.getCurrent().getNavigator().navigateTo(Views.PROFILE));
+        item1.addItem("Mein Profil", VaadinIcons.SPECIALIST, (MenuBar.Command) menuItem -> {
+            RegisterEditProfileWindow registerWindow = new RegisterEditProfileWindow();
+            UI.getCurrent().addWindow(registerWindow);
+        });
         item1.addItem("Suche", VaadinIcons.SEARCH, (MenuBar.Command) selectedItem -> UI.getCurrent().getNavigator().navigateTo(Views.LANDING));
         item1.addItem("Reservierungen", VaadinIcons.INBOX, (MenuBar.Command) selectedItem -> UI.getCurrent().getNavigator().navigateTo(Views.RESERVATIONS));
         if(user.getRolle().matches(Roles.MITARBEITER)){

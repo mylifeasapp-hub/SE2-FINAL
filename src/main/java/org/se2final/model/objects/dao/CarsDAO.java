@@ -1,10 +1,13 @@
 package org.se2final.model.objects.dao;
 
+import com.vaadin.server.VaadinService;
 import org.junit.jupiter.engine.discovery.predicates.IsTestClassWithTests;
 import org.se2final.control.HashFunktionsKlasse;
 import org.se2final.model.objects.dto.Cars;
+import org.se2final.model.objects.dto.Reservation;
 import org.se2final.model.objects.dto.User;
 
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,7 +47,7 @@ public class CarsDAO extends AbstractDAO {
             statement.executeUpdate();
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -77,7 +80,7 @@ public class CarsDAO extends AbstractDAO {
 
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return carsList;
     }
@@ -108,7 +111,7 @@ public class CarsDAO extends AbstractDAO {
 
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return carsList;
     }
@@ -128,7 +131,7 @@ public class CarsDAO extends AbstractDAO {
             statement = this.getPreparedStatement(basic);
         }
         else{
-            String source = " or concat_ws(upper(car_brand), upper(car_description), upper(car_year), car_ps, car_maxspeed, upper(car_modell)) like '";
+            String source = " and concat_ws(upper(car_brand), upper(car_description), upper(car_year), car_ps, car_maxspeed, upper(car_modell)) like '";
             String sql = "select * from carpool.cars where concat_ws(upper(car_brand), upper(car_description), upper(car_year), car_ps, car_maxspeed, upper(car_modell)) like '%"+search[0].toUpperCase()+"%'";
             for(int i = 1; i<search.length; i++){
                 input = source + "%"+search[i].toUpperCase()+"%' ";
@@ -190,8 +193,55 @@ public class CarsDAO extends AbstractDAO {
 
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return carTemp;
+    }
+
+    public void updateCar(Cars currentCar){
+        String sql =    "update carpool.cars set " +
+                "car_year= '"+currentCar.getCarYear()+"', " +
+                "car_description = '" + currentCar.getCarDescription()+"', " +
+                "car_brand = '" + currentCar.getCarBrand()+"', " +
+                "car_picture = '" + currentCar.getCarPicture()+"', " +
+                "car_modell = '" + currentCar.getCarModel()+"', " +
+                "car_ps = '" + currentCar.getCarPS()+"', " +
+                "car_maxspeed = '" + currentCar.getCarMaxSpeed()+"' " +
+                "where car_id = "+currentCar.getCarID()+";";
+
+        PreparedStatement statement = this.getPreparedStatement(sql);
+
+        //Angaben in cars schreiben
+        try{
+            statement.execute();
+
+        } catch(SQLException ex){
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void deleteCar(int carID){
+        String sql =    "delete from carpool.reservation where car_id = "+carID+";" +
+                        "delete from carpool.cars where car_id = "+carID+";";
+
+        PreparedStatement statement = this.getPreparedStatement(sql);
+        Cars tempCar = null;
+        //Bild löschen
+        try {
+            tempCar = CarsDAO.getInstance().getCarByID(carID);
+        } catch (SQLException ex) {
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(!tempCar.getCarPicture().isEmpty()){
+            File image = new File(VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() +"/WEB-INF/cars/"+tempCar.getCarPicture()+".jpg");
+            image.delete();
+        }
+        //Auto löschen
+        try{
+            statement.execute();
+
+        } catch(SQLException ex){
+            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

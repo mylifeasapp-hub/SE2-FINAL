@@ -23,7 +23,7 @@ public class MenuBandDefault extends HorizontalLayout {
         //Click Listener
         LoginWindow loginPanel = new LoginWindow();
         buttonLogin.addClickListener(event -> UI.getCurrent().addWindow(loginPanel));
-        RegisterWindow registerPanel = new RegisterWindow();
+        RegisterEditProfileWindow registerPanel = new RegisterEditProfileWindow();
         buttonRegister.addClickListener(event -> UI.getCurrent().addWindow(registerPanel));
     }
 }

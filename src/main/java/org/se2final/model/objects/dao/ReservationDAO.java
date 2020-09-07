@@ -1,13 +1,10 @@
 package org.se2final.model.objects.dao;
 
-import org.se2final.model.objects.dto.Cars;
 import org.se2final.model.objects.dto.Reservation;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +39,7 @@ public class ReservationDAO extends AbstractDAO{
             statement.executeUpdate();
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -77,14 +74,14 @@ public class ReservationDAO extends AbstractDAO{
 
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return reservationList;
     }
 
     public List<Reservation> getReservationsForCustomer(int currentUser) throws SQLException {
         List<Reservation> reservationList = new ArrayList<>();
-        String sql = "SELECT r.car_id, r.res_date, r.res_status, r.res_time, r.user_id FROM\n" +
+        String sql = "SELECT r.car_id, r.res_date, r.res_status, r.res_time, r.user_id, c.car_reg_user_id  FROM\n" +
                 "carpool.reg_user ru,\n" +
                 "carpool.cars c,\n" +
                 "carpool.reservation r\n" +
@@ -107,15 +104,34 @@ public class ReservationDAO extends AbstractDAO{
                 resTemp.setResStatus(rs.getString(3));
                 resTemp.setResTime(rs.getTime(4));
                 resTemp.setUserID(rs.getInt(5));
+                resTemp.setWorkID(rs.getInt(6));
 
                 reservationList.add(resTemp);
             }
 
 
         } catch(SQLException ex){
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return reservationList;
+    }
+
+    public void setStatusReservation(Reservation statusReservation, String status){
+        String sql =    "update carpool.reservation set res_status = '"+status+"' " +
+                        "where car_id = "+statusReservation.getCarID()+" and " +
+                        "res_date = '"+statusReservation.getResDate()+"' and " +
+                        "res_time = '"+statusReservation.getResTime()+"' and " +
+                        "res_status = '"+statusReservation.getResStatus()+"' and " +
+                        "user_id = "+statusReservation.getUserID()+";";
+        PreparedStatement statement = this.getPreparedStatement(sql);
+
+        //Angaben in cars schreiben
+        try{
+            statement.execute();
+
+        } catch(SQLException ex){
+            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
