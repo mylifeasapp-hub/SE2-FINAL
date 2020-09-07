@@ -36,7 +36,6 @@ public class MyUI extends UI {
 
         navi.addView(Views.START, Main.class );
         navi.addView( Views.LANDING, Landing.class);
-        navi.addView( Views.PROFILE, Profile.class);
         navi.addView( Views.RESERVATIONS, Reservations.class);
         navi.addView( Views.CARS, MyCars.class);
 
