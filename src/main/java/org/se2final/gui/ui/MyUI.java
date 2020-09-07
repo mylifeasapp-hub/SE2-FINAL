@@ -2,15 +2,16 @@ package org.se2final.gui.ui;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.vaadin.annotations.PreserveOnRefresh;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.*;
 import com.vaadin.ui.*;
 import org.se2final.gui.ui.service.konstanten.Roles;
 import org.se2final.gui.ui.service.konstanten.Views;
-import org.se2final.gui.ui.views.Landing;
-import org.se2final.gui.ui.views.Main;
+import org.se2final.gui.ui.views.*;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window 
@@ -20,6 +21,8 @@ import org.se2final.gui.ui.views.Main;
  * overridden to add component to the user interface and initialize non-component functionality.
  */
 @Theme("mytheme")
+@Title("CARPOOL by CarLook Ltd. //dprost2s")
+@PreserveOnRefresh
 public class MyUI extends UI {
     private Navigator navi;
 
@@ -33,6 +36,9 @@ public class MyUI extends UI {
 
         navi.addView(Views.START, Main.class );
         navi.addView( Views.LANDING, Landing.class);
+        navi.addView( Views.PROFILE, Profile.class);
+        navi.addView( Views.RESERVATIONS, Reservations.class);
+        navi.addView( Views.CARS, MyCars.class);
 
 
 
@@ -45,3 +51,5 @@ public class MyUI extends UI {
     public static class MyUIServlet extends VaadinServlet {
     }
 }
+
+

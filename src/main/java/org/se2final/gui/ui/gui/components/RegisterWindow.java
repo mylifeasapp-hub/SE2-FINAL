@@ -93,7 +93,6 @@ public class RegisterWindow extends Window {
                 newUser.setSurname(nachnameField.getValue());
                 newUser.setEmail(emailField.getValue());
                 newUser.setPasswort(passwordField.getValue());
-                System.out.println(roleField.getValue());
                 newUser.setRolle(roleField.getValue());
 
                 UserDAO.getInstance().registerUser(newUser);
@@ -104,7 +103,6 @@ public class RegisterWindow extends Window {
 
 
                 Notification.show("Das Konto wurde erfolgreich erstellt!", "", Notification.Type.HUMANIZED_MESSAGE);
-                System.out.println(newUser);
             }
         });
 

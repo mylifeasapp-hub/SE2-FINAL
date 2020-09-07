@@ -7,13 +7,14 @@ import org.se2final.gui.ui.service.konstanten.Roles;
 import org.se2final.model.objects.dto.User;
 
 public class MenuBandUser extends HorizontalLayout {
+    User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);
     public MenuBandUser(){
         HorizontalLayout buttonPannel = new HorizontalLayout();
         this.setSizeFull();
         this.setHeight("100px");
         this.addStyleName("border_bottom");
 
-        User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);
+
 
         Label pageTitle = new Label("<div style=\"font-size:50px\">CARPOOL by CarLook Ltd.</div>", ContentMode.HTML);
 

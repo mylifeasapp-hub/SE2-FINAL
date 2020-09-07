@@ -2,9 +2,11 @@ package org.se2final.model.objects.dao;
 
 import org.se2final.control.HashFunktionsKlasse;
 import org.se2final.control.RegCheck;
+import org.se2final.model.objects.dto.Cars;
 import org.se2final.model.objects.dto.User;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,6 +41,32 @@ public class UserDAO extends AbstractDAO{
         } catch(SQLException ex){
             Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    public User getUserByID(int currentUserID) throws SQLException {
+        String sql = "Select * from carpool.reg_user where reg_user_id=?";
+        PreparedStatement statement = this.getPreparedStatement(sql);
+        statement.setInt(1, currentUserID);
+        //Ausgabe der Autos
+        User currentUser = new User();
+        try(ResultSet rs = statement.executeQuery()){
+            if(rs == null) return null;
+
+            while(rs.next()){
+                currentUser.setId(rs.getInt(1));
+                currentUser.setGender(rs.getString(2));
+                currentUser.setName(rs.getString(3));
+                currentUser.setSurname(rs.getString(4));
+                currentUser.setEmail(rs.getString(5));
+                currentUser.setPasswort(rs.getString(6));
+                currentUser.setRolle(rs.getString(7));
+
+            }
+
+
+        } catch(SQLException ex){
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return currentUser;
     }
 
 }
