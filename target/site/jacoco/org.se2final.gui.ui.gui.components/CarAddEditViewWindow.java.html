@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarAddEditViewWindow.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.gui.ui.gui.components</a> &gt; <span class="el_source">CarAddEditViewWindow.java</span></div><h1>CarAddEditViewWindow.java</h1><pre class="source lang-java linenums">package org.se2final.gui.ui.gui.components;
+
+
+
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.*;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.Window;
+import org.se2final.control.DataInputCheck;
+import org.se2final.control.ImageUploader;
+import org.se2final.gui.ui.service.konstanten.Roles;
+import org.se2final.gui.ui.service.konstanten.Views;
+import org.se2final.model.objects.dao.CarsDAO;
+import org.se2final.model.objects.dto.Cars;
+import org.se2final.model.objects.dto.User;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
+public class CarAddEditViewWindow extends Window {
+<span class="nc" id="L30">    User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);</span>
+    static final String EINFOLDER = &quot;/WEB-INF/cars/&quot;;
+<span class="nc" id="L32">    String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() + EINFOLDER;</span>
+<span class="nc" id="L33">    String filenameAttachement = &quot;&quot;;</span>
+<span class="nc" id="L34">    Label statusUpload = new Label();</span>
+    Button saveButton;
+<span class="nc" id="L36">    FormLayout content = new FormLayout();</span>
+
+<span class="nc" id="L38">    public CarAddEditViewWindow(){</span>
+
+<span class="nc" id="L40">    }</span>
+
+<span class="nc" id="L42">    public CarAddEditViewWindow(Cars currentCar){</span>
+
+        //Daten für Suche
+<span class="nc" id="L45">        TextField carBrand = new TextField(&quot;Automarke:&quot;);</span>
+<span class="nc" id="L46">        TextField carYear = new TextField(&quot;Erstzulassung(Jahr):&quot;);</span>
+<span class="nc" id="L47">        TextField carModel = new TextField(&quot;Modellbezeichnung:&quot;);</span>
+<span class="nc" id="L48">        TextField carPS = new TextField(&quot;Leistung(PS):&quot;);</span>
+<span class="nc" id="L49">        TextField carMaxSpeed = new TextField(&quot;Maximale Geschwindigkeit(km/h):&quot;);</span>
+
+        //Bild
+<span class="nc" id="L52">        ImageUploaderintern receiver = new ImageUploaderintern();</span>
+<span class="nc" id="L53">        Upload upload = new Upload(&quot;Anhang hinzufügen:&quot;, receiver);</span>
+<span class="nc" id="L54">        upload.setImmediateMode(true);</span>
+<span class="nc" id="L55">        upload.setWidth(&quot;1000px&quot;);</span>
+<span class="nc" id="L56">        upload.setAcceptMimeTypes(&quot;image/jpg&quot;);</span>
+<span class="nc" id="L57">        upload.setButtonCaption(&quot;Bild auswählen ...&quot;);</span>
+<span class="nc" id="L58">        upload.addSucceededListener(receiver);</span>
+
+        //Beschreibung
+<span class="nc" id="L61">        RichTextArea carDescription = new RichTextArea();</span>
+<span class="nc" id="L62">        carDescription.setWidth(&quot;1000px&quot;);</span>
+
+        //Buttons
+<span class="nc" id="L65">        HorizontalLayout buttonPane = new HorizontalLayout();</span>
+
+<span class="nc" id="L67">        saveButton = new Button(&quot;Speichern&quot;);</span>
+<span class="nc" id="L68">        Button cancelButton = new Button(&quot;Abbrechen&quot;);</span>
+
+<span class="nc" id="L70">        buttonPane.addComponents(saveButton, cancelButton);</span>
+
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if(currentCar!=null){</span>
+<span class="nc" id="L74">            this.setCaption(&quot;Auto bearbeiten:&quot;);</span>
+<span class="nc" id="L75">            carBrand.setValue(currentCar.getCarBrand());</span>
+<span class="nc" id="L76">            carYear.setValue(currentCar.getCarYear());</span>
+<span class="nc" id="L77">            carModel.setValue(currentCar.getCarModel());</span>
+<span class="nc" id="L78">            carPS.setValue(String.valueOf(currentCar.getCarPS()));</span>
+<span class="nc" id="L79">            carMaxSpeed.setValue(String.valueOf(currentCar.getCarMaxSpeed()));</span>
+
+<span class="nc" id="L81">            carDescription.setValue(currentCar.getCarDescription());</span>
+
+<span class="nc" id="L83">            saveButton.addClickListener(e -&gt; {</span>
+<span class="nc bnc" id="L84" title="All 4 branches missed.">                if(DataInputCheck.isNumeric(carPS.getValue())&amp;&amp;DataInputCheck.isNumeric(carMaxSpeed.getValue())){</span>
+
+<span class="nc" id="L86">                    currentCar.setCarBrand(carBrand.getValue());</span>
+<span class="nc" id="L87">                    currentCar.setCarYear(carYear.getValue());</span>
+<span class="nc" id="L88">                    currentCar.setCarDescription(carDescription.getValue());</span>
+<span class="nc" id="L89">                    currentCar.setOwnerID(user.getId());</span>
+<span class="nc" id="L90">                    currentCar.setCarMaxSpeed(Integer.parseInt(carMaxSpeed.getValue()));</span>
+<span class="nc" id="L91">                    currentCar.setCarPS(Integer.parseInt(carPS.getValue()));</span>
+<span class="nc" id="L92">                    currentCar.setCarModel(carModel.getValue());</span>
+
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    if(filenameAttachement.isEmpty()){</span>
+<span class="nc" id="L95">                        currentCar.setCarPicture(currentCar.getCarPicture());</span>
+                    }else{
+<span class="nc" id="L97">                        currentCar.setCarPicture(filenameAttachement);</span>
+                    }
+
+
+<span class="nc" id="L101">                    CarsDAO.getInstance().updateCar(currentCar);</span>
+
+<span class="nc" id="L103">                    this.close();</span>
+
+<span class="nc" id="L105">                    Notification.show(&quot;Das Auto wurde erfolgreich aktualisiert!&quot;, &quot;&quot;, Notification.Type.HUMANIZED_MESSAGE);</span>
+<span class="nc" id="L106">                    UI.getCurrent().getNavigator().navigateTo(Views.CARS);</span>
+                }else{
+<span class="nc" id="L108">                    Notification.show(&quot;Fehler:&quot;, &quot;Die Felder Leistung(PS) und maximaler Geschwindigkeit(km/h) akzeptieren nur Ganzzahlwerte!&quot;, Notification.Type.ERROR_MESSAGE);</span>
+                }
+
+
+
+<span class="nc" id="L113">            });</span>
+
+
+        }else{
+<span class="nc" id="L117">            this.setCaption(&quot;Auto hinzufügen:&quot;);</span>
+<span class="nc" id="L118">            saveButton.addClickListener(e -&gt; {</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">                if(DataInputCheck.isNumeric(carPS.getValue())&amp;&amp;DataInputCheck.isNumeric(carMaxSpeed.getValue())){</span>
+<span class="nc" id="L120">                    Cars tempCar = new Cars();</span>
+
+<span class="nc" id="L122">                    tempCar.setCarBrand(carBrand.getValue());</span>
+<span class="nc" id="L123">                    tempCar.setCarYear(carYear.getValue());</span>
+<span class="nc" id="L124">                    tempCar.setCarDescription(carDescription.getValue());</span>
+<span class="nc" id="L125">                    tempCar.setCarPicture(filenameAttachement);</span>
+<span class="nc" id="L126">                    tempCar.setOwnerID(user.getId());</span>
+<span class="nc" id="L127">                    tempCar.setCarMaxSpeed(Integer.parseInt(carMaxSpeed.getValue()));</span>
+<span class="nc" id="L128">                    tempCar.setCarPS(Integer.parseInt(carPS.getValue()));</span>
+<span class="nc" id="L129">                    tempCar.setCarModel(carModel.getValue());</span>
+
+
+<span class="nc" id="L132">                    CarsDAO.getInstance().enterCar(tempCar);</span>
+
+<span class="nc" id="L134">                    this.close();</span>
+
+
+<span class="nc" id="L137">                    Notification.show(&quot;Das Auto wurde erfolgreich im System registriert!&quot;, &quot;&quot;, Notification.Type.HUMANIZED_MESSAGE);</span>
+<span class="nc" id="L138">                    UI.getCurrent().getNavigator().navigateTo(Views.CARS);</span>
+<span class="nc" id="L139">                }else{</span>
+<span class="nc" id="L140">                    Notification.show(&quot;Fehler:&quot;, &quot;Die Felder Leistung(PS) und maximaler Geschwindigkeit(km/h) akzeptieren nur Ganzzahlwerte!&quot;, Notification.Type.ERROR_MESSAGE);</span>
+                }
+
+
+
+<span class="nc" id="L145">            });</span>
+
+        }
+
+
+<span class="nc" id="L150">        buttonPane.setSizeUndefined();</span>
+
+<span class="nc" id="L152">        content.addComponents(carBrand, carModel, carMaxSpeed, carPS, carYear, upload, statusUpload, carDescription, buttonPane);</span>
+
+
+<span class="nc" id="L155">        content.setSizeUndefined(); // Shrink to fit</span>
+<span class="nc" id="L156">        content.setMargin(true);</span>
+<span class="nc" id="L157">        setContent(content);</span>
+<span class="nc" id="L158">        center();</span>
+<span class="nc" id="L159">        setClosable(false);</span>
+<span class="nc" id="L160">        setResizable(false);</span>
+<span class="nc" id="L161">        setModal(true);</span>
+
+        //Click Listener
+<span class="nc" id="L164">        cancelButton.addClickListener(event -&gt; {</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if(filenameAttachement.isEmpty()){</span>
+<span class="nc" id="L166">                this.close();</span>
+            }else{
+<span class="nc" id="L168">                File image = new File(VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() +&quot;/WEB-INF/cars/&quot;+filenameAttachement+&quot;.jpg&quot;);</span>
+<span class="nc" id="L169">                image.delete();</span>
+<span class="nc" id="L170">                this.close();</span>
+            }
+<span class="nc" id="L172">        });</span>
+
+
+<span class="nc" id="L175">    }</span>
+
+    public void carView(int carID){
+<span class="nc" id="L178">        content.removeAllComponents();</span>
+
+<span class="nc" id="L180">        Cars tempCar = null;</span>
+        try {
+<span class="nc" id="L182">            tempCar = CarsDAO.getInstance().getCarByID(carID);</span>
+<span class="nc" id="L183">        } catch (SQLException ex) {</span>
+<span class="nc" id="L184">            Logger.getLogger(CarAddEditViewWindow.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L185">        }</span>
+        //Überschrift
+<span class="nc" id="L187">        this.setCaption(tempCar.getCarBrand() + &quot; - &quot;+tempCar.getCarModel());</span>
+
+        //Bild
+<span class="nc" id="L190">        Image image = new Image(&quot;&quot;, ImageUploader.carPicture(tempCar.getCarPicture()));</span>
+<span class="nc" id="L191">        image.setWidth(800, Unit.PIXELS);</span>
+
+        //Felder auslesen
+<span class="nc" id="L194">        Label carYear = new Label(tempCar.getCarYear());</span>
+<span class="nc" id="L195">        carYear.setCaption(&quot;Baujahr:&quot;);</span>
+<span class="nc" id="L196">        Label carDescription = new Label(tempCar.getCarDescription(), ContentMode.HTML);</span>
+<span class="nc" id="L197">        Label carPs = new Label(String.valueOf(tempCar.getCarPS())+&quot; PS&quot;);</span>
+<span class="nc" id="L198">        carPs.setCaption(&quot;Leistung:&quot;);</span>
+<span class="nc" id="L199">        Label carMaxSpeed = new Label(String.valueOf(tempCar.getCarMaxSpeed())+&quot; km/h&quot;);</span>
+<span class="nc" id="L200">        carMaxSpeed.setCaption(&quot;Maximalgeschwindigkeit:&quot;);</span>
+
+<span class="nc" id="L202">        HorizontalLayout keyFacts = new HorizontalLayout();</span>
+<span class="nc" id="L203">        keyFacts.setWidth(800, Unit.PIXELS);</span>
+<span class="nc" id="L204">        keyFacts.setDefaultComponentAlignment(Alignment.TOP_CENTER);</span>
+<span class="nc" id="L205">        keyFacts.addComponents(carYear, carPs, carMaxSpeed);</span>
+
+        //Buttons
+<span class="nc" id="L208">        Button buttonClose = new Button(&quot;Schließen&quot;);</span>
+<span class="nc" id="L209">        Button buttonReservation = new Button(&quot;Reservieren&quot;);</span>
+
+<span class="nc" id="L211">        HorizontalLayout buttonPane = new HorizontalLayout();</span>
+<span class="nc" id="L212">        buttonPane.setWidth(800, Unit.PIXELS);</span>
+<span class="nc" id="L213">        buttonPane.setDefaultComponentAlignment(Alignment.TOP_CENTER);</span>
+
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if(user.getRolle().equals(Roles.KUNDE)){</span>
+<span class="nc" id="L216">            buttonPane.addComponents(buttonReservation, buttonClose);</span>
+        }else {
+<span class="nc" id="L218">            buttonPane.addComponent(buttonClose);</span>
+        }
+
+
+<span class="nc" id="L222">        content.addComponents(image, keyFacts, carDescription, buttonPane);</span>
+<span class="nc" id="L223">        content.setDefaultComponentAlignment(Alignment.TOP_CENTER);</span>
+<span class="nc" id="L224">        content.setSizeUndefined(); // Shrink to fit</span>
+<span class="nc" id="L225">        content.setMargin(true);</span>
+<span class="nc" id="L226">        setContent(content);</span>
+<span class="nc" id="L227">        center();</span>
+<span class="nc" id="L228">        setClosable(false);</span>
+<span class="nc" id="L229">        setResizable(false);</span>
+<span class="nc" id="L230">        setModal(true);</span>
+
+        //Click Listener für Buttons
+<span class="nc" id="L233">        buttonClose.addClickListener(event -&gt; this.close());</span>
+
+<span class="nc" id="L235">        buttonReservation.addClickListener(event -&gt; {</span>
+<span class="nc" id="L236">            this.close();</span>
+<span class="nc" id="L237">            ReservationWindow newReservation = null;</span>
+            try {
+<span class="nc" id="L239">                newReservation = new ReservationWindow(carID);</span>
+<span class="nc" id="L240">            } catch (SQLException ex) {</span>
+<span class="nc" id="L241">                Logger.getLogger(CarAddEditViewWindow.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L242">            }</span>
+<span class="nc" id="L243">            UI.getCurrent().addWindow(newReservation);</span>
+<span class="nc" id="L244">        });</span>
+<span class="nc" id="L245">    }</span>
+
+<span class="nc" id="L247">    class ImageUploaderintern implements Upload.Receiver, Upload.SucceededListener {</span>
+        private File file;
+
+        public OutputStream receiveUpload(String filename,
+                                          String mimeType) {
+            // Create uploadProfilbild stream
+            FileOutputStream fos; // Stream to write to
+            try {
+                // Open the file for writing.
+<span class="nc" id="L256">                filenameAttachement = user.getId() + String.valueOf(System.currentTimeMillis());</span>
+<span class="nc" id="L257">                file = new File(basepath + filenameAttachement + &quot;.jpg&quot;); /// Dazwischen filename noch die USERID ?!</span>
+<span class="nc" id="L258">                fos = new FileOutputStream(file);</span>
+
+<span class="nc" id="L260">            } catch (final FileNotFoundException e) {</span>
+<span class="nc" id="L261">                new Notification(&quot;Datei konnte nicht gefunden werden.&quot;,</span>
+<span class="nc" id="L262">                        e.getMessage(),</span>
+                        Notification.Type.ERROR_MESSAGE)
+<span class="nc" id="L264">                        .show(Page.getCurrent());</span>
+<span class="nc" id="L265">                return null;</span>
+<span class="nc" id="L266">            }</span>
+<span class="nc" id="L267">            return fos; // Return the output stream to write to</span>
+        }
+        public void uploadSucceeded(Upload.SucceededEvent event) {
+            // Content for the PopupView
+<span class="nc" id="L271">            statusUpload.setCaption(&quot;Upload erfolgreich!&quot;);</span>
+<span class="nc" id="L272">            statusUpload.setValue(&quot;Dateiname lautet: &quot;+filenameAttachement+&quot;.jpg&quot;);</span>
+
+<span class="nc" id="L274">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

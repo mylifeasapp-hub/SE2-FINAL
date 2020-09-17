@@ -132,4 +132,19 @@ public class UserDAO extends AbstractDAO{
 
     }
 
+    public User getUserID(User user){
+        String sql = "Select reg_user_id from carpool.reg_user where reg_user_email='"+user.getEmail()+"'";
+        PreparedStatement statement = this.getPreparedStatement(sql);
+        int userID = 0;
+        try(ResultSet rs = statement.executeQuery()) {
+            while (rs.next()) {
+                userID = rs.getInt(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        user.setId(userID);
+        return user;
+    }
+
 }

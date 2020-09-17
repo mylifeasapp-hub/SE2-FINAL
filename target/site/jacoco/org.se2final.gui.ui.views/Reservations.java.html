@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Reservations.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.gui.ui.views</a> &gt; <span class="el_source">Reservations.java</span></div><h1>Reservations.java</h1><pre class="source lang-java linenums">package org.se2final.gui.ui.views;
+
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.*;
+import org.se2final.gui.ui.gui.components.MenuBandUser;
+import org.se2final.gui.ui.service.konstanten.Roles;
+import org.se2final.gui.ui.service.konstanten.Status;
+import org.se2final.gui.ui.service.konstanten.Views;
+import org.se2final.model.objects.dao.CarsDAO;
+import org.se2final.model.objects.dao.ReservationDAO;
+import org.se2final.model.objects.dao.UserDAO;
+import org.se2final.model.objects.dto.Cars;
+import org.se2final.model.objects.dto.Reservation;
+import org.se2final.model.objects.dto.User;
+
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+<span class="nc" id="L28">public class Reservations extends VerticalLayout implements View {</span>
+<span class="nc" id="L29">    User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);;</span>
+<span class="nc" id="L30">    Grid&lt;Reservation&gt; reservationsGrid = new Grid&lt;&gt;();</span>
+
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        //Wenn eingeloggt -&gt; Landing Page, sonst -&gt; Startseite
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if(user == null){</span>
+<span class="nc" id="L35">            UI.getCurrent().getNavigator().navigateTo(Views.START);</span>
+        }else {
+<span class="nc" id="L37">            this.setUp();</span>
+        }
+<span class="nc" id="L39">    }</span>
+
+    public void setUp(){
+<span class="nc" id="L42">        final MenuBandUser menuBandUser = new MenuBandUser();</span>
+
+<span class="nc" id="L44">        reservationsGrid.setSizeUndefined();</span>
+<span class="nc" id="L45">        List&lt;Reservation&gt; resList = getItems();</span>
+
+
+<span class="nc" id="L48">        reservationsGrid.removeAllColumns();</span>
+<span class="nc" id="L49">        reservationsGrid.setCaptionAsHtml(true);</span>
+<span class="nc" id="L50">        reservationsGrid.setCaption(&quot;&lt;div style=\&quot;font-size:30px\&quot;&gt;Reservierungen:&lt;/div&gt;&quot;);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        reservationsGrid.setHeightByRows(!resList.isEmpty() ? resList.size() : 1);</span>
+<span class="nc" id="L52">        reservationsGrid.setItems(resList);</span>
+
+<span class="nc" id="L54">        reservationsGrid.addColumn(r -&gt; {</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">            if(r.getResStatus().equals(Status.SENT)&amp;&amp;user.getRolle().equals(Roles.MITARBEITER)){</span>
+<span class="nc" id="L56">                return Status.RECEIVED;</span>
+            }
+            else{
+<span class="nc" id="L59">                return r.getResStatus();</span>
+            }
+<span class="nc" id="L61">        }).setCaption(&quot;Status:&quot;);</span>
+<span class="nc" id="L62">        reservationsGrid.addColumn(r -&gt; {</span>
+<span class="nc" id="L63">            DateFormat dateFormat = new SimpleDateFormat(&quot;dd.MM.YYYY&quot;);</span>
+<span class="nc" id="L64">            String date = dateFormat.format(r.getResDate());</span>
+<span class="nc" id="L65">            DateFormat timeFormat = new SimpleDateFormat(&quot;HH:mm&quot;);</span>
+<span class="nc" id="L66">            date = date + &quot; um &quot; + timeFormat.format(r.getResTime()) + &quot; Uhr&quot;;</span>
+<span class="nc" id="L67">            return date;</span>
+<span class="nc" id="L68">        }).setCaption(&quot;Zeitpunkt Reservierung:&quot;);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if(user.getRolle().equals(Roles.MITARBEITER)) {</span>
+<span class="nc" id="L70">            reservationsGrid.addColumn(r -&gt; {</span>
+<span class="nc" id="L71">                String custName = null;</span>
+                try {
+<span class="nc" id="L73">                    User tempUser = UserDAO.getInstance().getUserByID(r.getUserID());</span>
+<span class="nc" id="L74">                    custName = tempUser.getSurname() + &quot;, &quot; + tempUser.getName();</span>
+<span class="nc" id="L75">                } catch (SQLException ex) {</span>
+<span class="nc" id="L76">                    Logger.getLogger(Reservations.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L77">                }</span>
+<span class="nc" id="L78">                return custName;</span>
+<span class="nc" id="L79">            }).setCaption(&quot;Kundenname:&quot;);</span>
+<span class="nc" id="L80">            reservationsGrid.addColumn(r -&gt; {</span>
+<span class="nc" id="L81">                String custMail = null;</span>
+                try {
+<span class="nc" id="L83">                    User tempUser = UserDAO.getInstance().getUserByID(r.getUserID());</span>
+<span class="nc" id="L84">                    custMail = tempUser.getEmail();</span>
+<span class="nc" id="L85">                } catch (SQLException ex) {</span>
+<span class="nc" id="L86">                    Logger.getLogger(Reservations.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L87">                }</span>
+<span class="nc" id="L88">                return custMail;</span>
+<span class="nc" id="L89">            }).setCaption(&quot;Kunden E-Mail:&quot;);</span>
+        }
+        else{
+<span class="nc" id="L92">            reservationsGrid.addColumn(r -&gt; {</span>
+<span class="nc" id="L93">                String custName = null;</span>
+                try {
+<span class="nc" id="L95">                    User tempUser = UserDAO.getInstance().getUserByID(r.getWorkID());</span>
+<span class="nc" id="L96">                    custName = tempUser.getSurname() + &quot;, &quot; + tempUser.getName();</span>
+<span class="nc" id="L97">                } catch (SQLException ex) {</span>
+<span class="nc" id="L98">                    Logger.getLogger(Reservations.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L99">                }</span>
+<span class="nc" id="L100">                return custName;</span>
+<span class="nc" id="L101">            }).setCaption(&quot;Ansprechpartner:&quot;);</span>
+<span class="nc" id="L102">            reservationsGrid.addColumn(r -&gt; {</span>
+<span class="nc" id="L103">                String custMail = null;</span>
+                try {
+<span class="nc" id="L105">                    User tempUser = UserDAO.getInstance().getUserByID(r.getWorkID());</span>
+<span class="nc" id="L106">                    custMail = tempUser.getEmail();</span>
+<span class="nc" id="L107">                } catch (SQLException ex) {</span>
+<span class="nc" id="L108">                    Logger.getLogger(Reservations.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L109">                }</span>
+<span class="nc" id="L110">                return custMail;</span>
+<span class="nc" id="L111">            }).setCaption(&quot;Ansprechpartner E-Mail:&quot;);</span>
+
+        }
+<span class="nc" id="L114">        reservationsGrid.addColumn(reservation -&gt; {</span>
+<span class="nc" id="L115">            String carType = null;</span>
+            try {
+<span class="nc" id="L117">                Cars tempCar = CarsDAO.getInstance().getCarByID(reservation.getCarID());</span>
+<span class="nc" id="L118">                carType = tempCar.getCarBrand() + &quot; - &quot; +tempCar.getCarModel()+&quot; - &quot;+tempCar.getCarYear();</span>
+<span class="nc" id="L119">            } catch (SQLException ex) {</span>
+<span class="nc" id="L120">                Logger.getLogger(Reservations.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L121">            }</span>
+<span class="nc" id="L122">            return carType;</span>
+<span class="nc" id="L123">        }).setCaption(&quot;Auto-Modell:&quot;);</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        if(user.getRolle().equals(Roles.MITARBEITER)){</span>
+<span class="nc" id="L125">            reservationsGrid.addColumn(r -&gt; {</span>
+                Button buttonAccept;
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if(r.getResStatus().equals(Status.SENT)){</span>
+<span class="nc" id="L128">                    buttonAccept = new Button(VaadinIcons.CHECK_CIRCLE);</span>
+<span class="nc" id="L129">                    buttonAccept.addClickListener(event -&gt; {</span>
+                        try {
+<span class="nc" id="L131">                            Reservation currentReservation = new Reservation();</span>
+<span class="nc" id="L132">                            currentReservation.setCarID(r.getCarID());</span>
+<span class="nc" id="L133">                            currentReservation.setUserID(r.getUserID());</span>
+<span class="nc" id="L134">                            currentReservation.setResStatus(r.getResStatus());</span>
+<span class="nc" id="L135">                            currentReservation.setResDate(r.getResDate());</span>
+<span class="nc" id="L136">                            currentReservation.setResTime(r.getResTime());</span>
+
+<span class="nc" id="L138">                            ReservationDAO.getInstance().setStatusReservation(currentReservation, Status.ACCEPT);</span>
+<span class="nc" id="L139">                            Notification.show(&quot;Erfolg:&quot;, &quot;Status erfolgreich in \&quot;&quot;+Status.ACCEPT+&quot;\&quot; geändert!&quot;, Notification.Type.HUMANIZED_MESSAGE);</span>
+<span class="nc" id="L140">                            reservationsGrid.setItems(getItems());</span>
+<span class="nc" id="L141">                            reservationsGrid.getDataProvider().refreshAll();</span>
+<span class="nc" id="L142">                        } catch (Exception ex) {</span>
+<span class="nc" id="L143">                            Logger.getLogger(Landing.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L144">                            Notification.show(&quot;Fehler:&quot;, &quot;Status konnte nicht geändert werden!&quot;, Notification.Type.ERROR_MESSAGE);</span>
+<span class="nc" id="L145">                        }</span>
+<span class="nc" id="L146">                    });</span>
+                }
+                else{
+<span class="nc" id="L149">                    buttonAccept = new Button(&quot;&quot;);</span>
+<span class="nc" id="L150">                    buttonAccept.setEnabled(false);</span>
+                }
+<span class="nc" id="L152">                return buttonAccept;</span>
+<span class="nc" id="L153">            }, new ComponentRenderer()).setCaption(&quot;Annehmen:&quot;);</span>
+
+<span class="nc" id="L155">            reservationsGrid.addColumn(r -&gt; {</span>
+                Button buttonDecline;
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                if(r.getResStatus().equals(Status.SENT)){</span>
+<span class="nc" id="L158">                    buttonDecline = new Button(VaadinIcons.CLOSE_CIRCLE);</span>
+<span class="nc" id="L159">                    buttonDecline.addClickListener(event -&gt; {</span>
+                        try {
+<span class="nc" id="L161">                            Reservation currentReservation = new Reservation();</span>
+<span class="nc" id="L162">                            currentReservation.setCarID(r.getCarID());</span>
+<span class="nc" id="L163">                            currentReservation.setUserID(r.getUserID());</span>
+<span class="nc" id="L164">                            currentReservation.setResStatus(r.getResStatus());</span>
+<span class="nc" id="L165">                            currentReservation.setResDate(r.getResDate());</span>
+<span class="nc" id="L166">                            currentReservation.setResTime(r.getResTime());</span>
+
+<span class="nc" id="L168">                            ReservationDAO.getInstance().setStatusReservation(currentReservation, Status.DECLINE);</span>
+<span class="nc" id="L169">                            Notification.show(&quot;Erfolg:&quot;, &quot;Status erfolgreich in \&quot;&quot;+Status.DECLINE+&quot;\&quot; geändert!&quot;, Notification.Type.HUMANIZED_MESSAGE);</span>
+<span class="nc" id="L170">                            reservationsGrid.setItems(getItems());</span>
+<span class="nc" id="L171">                            reservationsGrid.getDataProvider().refreshAll();</span>
+<span class="nc" id="L172">                        } catch (Exception ex) {</span>
+<span class="nc" id="L173">                            Logger.getLogger(Landing.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L174">                            Notification.show(&quot;Fehler:&quot;, &quot;Status konnte nicht geändert werden!&quot;, Notification.Type.ERROR_MESSAGE);</span>
+<span class="nc" id="L175">                        }</span>
+<span class="nc" id="L176">                    });</span>
+                }
+                else{
+<span class="nc" id="L179">                    buttonDecline = new Button(&quot;&quot;);</span>
+<span class="nc" id="L180">                    buttonDecline.setEnabled(false);</span>
+                }
+<span class="nc" id="L182">                return buttonDecline;</span>
+<span class="nc" id="L183">            }, new ComponentRenderer()).setCaption(&quot;Ablehnen:&quot;);</span>
+
+
+        }
+
+
+<span class="nc" id="L189">        reservationsGrid.setWidth(&quot;80%&quot;);</span>
+<span class="nc" id="L190">        this.addComponents(menuBandUser, reservationsGrid);</span>
+<span class="nc" id="L191">        this.setComponentAlignment(reservationsGrid, Alignment.TOP_CENTER);</span>
+<span class="nc" id="L192">    }</span>
+
+    private List&lt;Reservation&gt; getItems(){
+<span class="nc" id="L195">        List&lt;Reservation&gt; resList = null;</span>
+        try {
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            if (user.getRolle().equals(Roles.MITARBEITER)) {</span>
+<span class="nc" id="L198">                resList = ReservationDAO.getInstance().getReservationsForWorker(user.getId());</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            } else if (user.getRolle().equals(Roles.KUNDE)) {</span>
+<span class="nc" id="L200">                resList = ReservationDAO.getInstance().getReservationsForCustomer(user.getId());</span>
+            }
+<span class="nc" id="L202">        }catch (SQLException ex){</span>
+<span class="nc" id="L203">            Logger.getLogger(Reservations.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L204">        }</span>
+<span class="nc" id="L205">        return resList;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

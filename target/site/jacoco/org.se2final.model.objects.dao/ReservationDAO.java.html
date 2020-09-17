@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.model.objects.dao</a> &gt; <span class="el_source">ReservationDAO.java</span></div><h1>ReservationDAO.java</h1><pre class="source lang-java linenums">package org.se2final.model.objects.dao;
+
+import org.se2final.model.objects.dto.Reservation;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ReservationDAO extends AbstractDAO{
+<span class="nc" id="L15">    private static ReservationDAO dao = null;</span>
+<span class="nc" id="L16">    private  ReservationDAO(){</span>
+
+<span class="nc" id="L18">    }</span>
+    public static ReservationDAO getInstance(){
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        if(dao == null){</span>
+<span class="nc" id="L21">            dao = new ReservationDAO();</span>
+        }
+<span class="nc" id="L23">        return dao;</span>
+    }
+
+    public void sendReservation(Reservation newReservation){
+<span class="nc" id="L27">        String sql = &quot;insert into carpool.reservation (user_id, res_date, res_time, res_status, car_id) values (?,?,?,?,?)&quot;;</span>
+<span class="nc" id="L28">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+
+        //Angaben in cars schreiben
+        try{
+<span class="nc" id="L32">            statement.setInt(1, newReservation.getUserID());</span>
+<span class="nc" id="L33">            statement.setDate(2, newReservation.getResDate());</span>
+<span class="nc" id="L34">            statement.setTime(3, newReservation.getResTime());</span>
+<span class="nc" id="L35">            statement.setString(4, newReservation.getResStatus());</span>
+<span class="nc" id="L36">            statement.setInt(5, newReservation.getCarID());</span>
+
+
+<span class="nc" id="L39">            statement.executeUpdate();</span>
+
+<span class="nc" id="L41">        } catch(SQLException ex){</span>
+<span class="nc" id="L42">            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L43">        }</span>
+<span class="nc" id="L44">    }</span>
+
+    public List&lt;Reservation&gt; getReservationsForWorker(int currentUser) throws SQLException {
+<span class="nc" id="L47">        List&lt;Reservation&gt; reservationList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L48">        String sql = &quot;SELECT r.car_id, r.res_date, r.res_status, r.res_time, r.user_id FROM\n&quot; +</span>
+                &quot;carpool.reg_user ru,\n&quot; +
+                &quot;carpool.cars c,\n&quot; +
+                &quot;carpool.reservation r\n&quot; +
+                &quot;WHERE \n&quot; +
+                &quot;ru.reg_user_id = ? and ru.reg_user_id = c.car_reg_user_id and c.car_id = r.car_id;&quot;;
+<span class="nc" id="L54">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+<span class="nc" id="L55">        statement.setInt(1, currentUser);</span>
+
+        //Ausgabe der Autos
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if(statement==null) return Collections.emptyList();</span>
+
+<span class="nc" id="L60">        try(ResultSet rs = statement.executeQuery()){</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if(rs == null) return Collections.emptyList();</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            while(rs.next()){</span>
+<span class="nc" id="L64">                Reservation resTemp = new Reservation();</span>
+
+<span class="nc" id="L66">                resTemp.setCarID(rs.getInt(1));</span>
+<span class="nc" id="L67">                resTemp.setResDate(rs.getDate(2));</span>
+<span class="nc" id="L68">                resTemp.setResStatus(rs.getString(3));</span>
+<span class="nc" id="L69">                resTemp.setResTime(rs.getTime(4));</span>
+<span class="nc" id="L70">                resTemp.setUserID(rs.getInt(5));</span>
+
+<span class="nc" id="L72">                reservationList.add(resTemp);</span>
+<span class="nc" id="L73">            }</span>
+
+
+<span class="nc bnc" id="L76" title="All 12 branches missed.">        } catch(SQLException ex){</span>
+<span class="nc" id="L77">            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L78">        }</span>
+<span class="nc" id="L79">        return reservationList;</span>
+    }
+
+    public List&lt;Reservation&gt; getReservationsForCustomer(int currentUser) throws SQLException {
+<span class="nc" id="L83">        List&lt;Reservation&gt; reservationList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L84">        String sql = &quot;SELECT r.car_id, r.res_date, r.res_status, r.res_time, r.user_id, c.car_reg_user_id  FROM\n&quot; +</span>
+                &quot;carpool.reg_user ru,\n&quot; +
+                &quot;carpool.cars c,\n&quot; +
+                &quot;carpool.reservation r\n&quot; +
+                &quot;WHERE \n&quot; +
+                &quot;ru.reg_user_id = ? and ru.reg_user_id = r.user_id and r.car_id = c.car_id;&quot;;
+<span class="nc" id="L90">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+<span class="nc" id="L91">        statement.setInt(1, currentUser);</span>
+
+        //Ausgabe der Autos
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if(statement==null) return Collections.emptyList();</span>
+
+<span class="nc" id="L96">        try(ResultSet rs = statement.executeQuery()){</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            if(rs == null) return Collections.emptyList();</span>
+
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            while(rs.next()){</span>
+<span class="nc" id="L100">                Reservation resTemp = new Reservation();</span>
+
+<span class="nc" id="L102">                resTemp.setCarID(rs.getInt(1));</span>
+<span class="nc" id="L103">                resTemp.setResDate(rs.getDate(2));</span>
+<span class="nc" id="L104">                resTemp.setResStatus(rs.getString(3));</span>
+<span class="nc" id="L105">                resTemp.setResTime(rs.getTime(4));</span>
+<span class="nc" id="L106">                resTemp.setUserID(rs.getInt(5));</span>
+<span class="nc" id="L107">                resTemp.setWorkID(rs.getInt(6));</span>
+
+<span class="nc" id="L109">                reservationList.add(resTemp);</span>
+<span class="nc" id="L110">            }</span>
+
+
+<span class="nc bnc" id="L113" title="All 12 branches missed.">        } catch(SQLException ex){</span>
+<span class="nc" id="L114">            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L115">        }</span>
+<span class="nc" id="L116">        return reservationList;</span>
+    }
+
+    public void setStatusReservation(Reservation statusReservation, String status){
+<span class="nc" id="L120">        String sql =    &quot;update carpool.reservation set res_status = '&quot;+status+&quot;' &quot; +</span>
+<span class="nc" id="L121">                        &quot;where car_id = &quot;+statusReservation.getCarID()+&quot; and &quot; +</span>
+<span class="nc" id="L122">                        &quot;res_date = '&quot;+statusReservation.getResDate()+&quot;' and &quot; +</span>
+<span class="nc" id="L123">                        &quot;res_time = '&quot;+statusReservation.getResTime()+&quot;' and &quot; +</span>
+<span class="nc" id="L124">                        &quot;res_status = '&quot;+statusReservation.getResStatus()+&quot;' and &quot; +</span>
+<span class="nc" id="L125">                        &quot;user_id = &quot;+statusReservation.getUserID()+&quot;;&quot;;</span>
+<span class="nc" id="L126">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+
+        //Angaben in cars schreiben
+        try{
+<span class="nc" id="L130">            statement.execute();</span>
+
+<span class="nc" id="L132">        } catch(SQLException ex){</span>
+<span class="nc" id="L133">            Logger.getLogger(ReservationDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L134">        }</span>
+<span class="nc" id="L135">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

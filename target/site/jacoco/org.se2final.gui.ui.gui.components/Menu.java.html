@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Menu.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.gui.ui.gui.components</a> &gt; <span class="el_source">Menu.java</span></div><h1>Menu.java</h1><pre class="source lang-java linenums">package org.se2final.gui.ui.gui.components;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.UI;
+import org.se2final.control.LoginCheck;
+import org.se2final.gui.ui.service.konstanten.Roles;
+import org.se2final.gui.ui.service.konstanten.Views;
+import org.se2final.model.objects.dto.User;
+
+public class Menu extends MenuBar {
+<span class="nc" id="L13">    User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);</span>
+<span class="nc" id="L14">    public Menu(){</span>
+<span class="nc" id="L15">        this.addStyleName(&quot;menu&quot;);</span>
+<span class="nc" id="L16">        MenuBar.MenuItem item1 = this.addItem(&quot;&quot;, VaadinIcons.MENU, null);</span>
+
+<span class="nc" id="L18">        item1.addItem(&quot;Mein Profil&quot;, VaadinIcons.SPECIALIST, (MenuBar.Command) menuItem -&gt; {</span>
+<span class="nc" id="L19">            RegisterEditProfileWindow registerWindow = new RegisterEditProfileWindow();</span>
+<span class="nc" id="L20">            UI.getCurrent().addWindow(registerWindow);</span>
+<span class="nc" id="L21">        });</span>
+<span class="nc" id="L22">        item1.addItem(&quot;Suche&quot;, VaadinIcons.SEARCH, (MenuBar.Command) selectedItem -&gt; UI.getCurrent().getNavigator().navigateTo(Views.LANDING));</span>
+<span class="nc" id="L23">        item1.addItem(&quot;Reservierungen&quot;, VaadinIcons.INBOX, (MenuBar.Command) selectedItem -&gt; UI.getCurrent().getNavigator().navigateTo(Views.RESERVATIONS));</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        if(user.getRolle().matches(Roles.MITARBEITER)){</span>
+<span class="nc" id="L25">            item1.addItem(&quot;Meine Autos&quot;, VaadinIcons.CAR, (MenuBar.Command) selectedItem -&gt; UI.getCurrent().getNavigator().navigateTo(Views.CARS));</span>
+        }
+<span class="nc" id="L27">        item1.addItem(&quot;Abmelden&quot;, VaadinIcons.SIGN_OUT, (MenuBar.Command) selectedItem -&gt; LoginCheck.logoutUser());</span>
+
+<span class="nc" id="L29">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

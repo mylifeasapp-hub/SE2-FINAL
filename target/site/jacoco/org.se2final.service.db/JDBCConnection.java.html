@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JDBCConnection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.service.db</a> &gt; <span class="el_source">JDBCConnection.java</span></div><h1>JDBCConnection.java</h1><pre class="source lang-java linenums">package org.se2final.service.db;
+
+
+
+import org.se2final.control.exceptions.DatabaseException;
+
+import java.sql.*;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class JDBCConnection {
+
+<span class="fc" id="L14">    private static JDBCConnection connection = null;</span>
+<span class="fc" id="L15">    private String url = &quot;jdbc:postgresql://dumbo.inf.h-brs.de/dprost2s&quot;;</span>
+    private Connection conn;
+
+    public static JDBCConnection getInstance() throws DatabaseException {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">        if(connection==null){</span>
+<span class="fc" id="L20">            connection = new JDBCConnection();</span>
+        }
+<span class="fc" id="L22">        return connection;</span>
+    }
+
+<span class="fc" id="L25">    private JDBCConnection() throws DatabaseException {</span>
+<span class="fc" id="L26">        this.initConnection();</span>
+<span class="fc" id="L27">    }</span>
+
+    public void initConnection() throws DatabaseException {
+        try{
+<span class="fc" id="L31">            DriverManager.registerDriver(new org.postgresql.Driver());</span>
+<span class="nc" id="L32">        } catch(SQLException ex){</span>
+<span class="nc" id="L33">            Logger.getLogger(JDBCConnection.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="fc" id="L34">        }</span>
+<span class="fc" id="L35">        this.openConnection();</span>
+<span class="fc" id="L36">    }</span>
+
+    public void openConnection() throws DatabaseException {
+
+        try {
+<span class="fc" id="L41">            Properties props = new Properties();</span>
+<span class="fc" id="L42">            props.setProperty(&quot;user&quot;, ZugangDB.LOGIN);</span>
+<span class="fc" id="L43">            props.setProperty(&quot;password&quot;, ZugangDB.LOGIN);</span>
+
+<span class="fc" id="L45">            this.conn = DriverManager.getConnection(url, props);</span>
+
+<span class="nc" id="L47">        } catch (SQLException ex) {</span>
+<span class="nc" id="L48">            Logger.getLogger(JDBCConnection.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L49">            throw new DatabaseException(&quot;Fehler bei Datenbankzugriff! Sichere Vebindung vorhanden?&quot;);</span>
+<span class="fc" id="L50">        }</span>
+<span class="fc" id="L51">    }</span>
+
+    public Statement getStatement() throws DatabaseException{
+
+        try {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if(this.conn.isClosed()){</span>
+<span class="nc" id="L57">                this.openConnection();</span>
+            }
+<span class="nc" id="L59">            return this.conn.createStatement();</span>
+
+<span class="nc" id="L61">        } catch (SQLException ex) {</span>
+<span class="nc" id="L62">            Logger.getLogger(JDBCConnection.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L63">            return null;</span>
+        }
+    }
+
+    public PreparedStatement getPreparedStatement(String sql) throws DatabaseException{
+        try {
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">            if(this.conn.isClosed()){</span>
+<span class="nc" id="L70">                this.openConnection();</span>
+            }
+<span class="fc" id="L72">            return this.conn.prepareStatement(sql);</span>
+
+<span class="nc" id="L74">        } catch (SQLException ex) {</span>
+<span class="nc" id="L75">            Logger.getLogger(JDBCConnection.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L76">            return null;</span>
+        }
+    }
+
+    public boolean closeConnection(){
+        try {
+<span class="nc" id="L82">            this.conn.close();</span>
+<span class="nc" id="L83">        } catch (SQLException ex) {</span>
+<span class="nc" id="L84">            Logger.getLogger(JDBCConnection.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L85">        }</span>
+<span class="nc" id="L86">        return true;  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

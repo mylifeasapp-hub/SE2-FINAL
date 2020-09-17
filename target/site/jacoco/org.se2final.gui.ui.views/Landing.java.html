@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Landing.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.gui.ui.views</a> &gt; <span class="el_source">Landing.java</span></div><h1>Landing.java</h1><pre class="source lang-java linenums">package org.se2final.gui.ui.views;
+
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.*;
+import com.vaadin.ui.renderers.ButtonRenderer;
+import com.vaadin.ui.renderers.HtmlRenderer;
+import org.se2final.control.ImageUploader;
+import org.se2final.control.SearchControlProxy;
+import org.se2final.gui.ui.gui.components.CarAddEditViewWindow;
+import org.se2final.gui.ui.gui.components.MenuBandUser;
+import org.se2final.gui.ui.gui.components.ReservationWindow;
+import org.se2final.gui.ui.service.konstanten.Roles;
+import org.se2final.gui.ui.service.konstanten.Views;
+import org.se2final.model.objects.dto.Cars;
+import org.se2final.model.objects.dto.User;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+<span class="nc" id="L25">public class Landing extends VerticalLayout implements View {</span>
+<span class="nc" id="L26">    User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);</span>
+<span class="nc" id="L27">    SearchControlProxy sc = new SearchControlProxy();</span>
+<span class="nc" id="L28">    Grid&lt;Cars&gt; carsGrid = new Grid&lt;&gt;();</span>
+
+    public void enter(ViewChangeListener.ViewChangeEvent event) {
+        //Wenn eingeloggt -&gt; Landing Page, sonst -&gt; Startseite
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if(user == null){</span>
+<span class="nc" id="L33">            UI.getCurrent().getNavigator().navigateTo(Views.START);</span>
+        }else {
+<span class="nc" id="L35">            this.setUp();</span>
+        }
+<span class="nc" id="L37">    }</span>
+
+    public void setUp(){
+<span class="nc" id="L40">        final MenuBandUser menuBandUser = new MenuBandUser();</span>
+
+        //Suchfeld
+<span class="nc" id="L43">        TextField carSearchBrand = new TextField();</span>
+<span class="nc" id="L44">        carSearchBrand.setDescription(&quot;Fügen Sie einen Namen zur Suche hinzu!&quot;);</span>
+<span class="nc" id="L45">        carSearchBrand.setValue(&quot;&quot;);</span>
+<span class="nc" id="L46">        carSearchBrand.setCaptionAsHtml(true);</span>
+<span class="nc" id="L47">        carSearchBrand.setCaption(&quot;&lt;div style=\&quot;font-size:30px\&quot;&gt;Suchbegriff eingeben:&lt;/div&gt;&lt;div style=\&quot;font-size:20px\&quot;&gt;(Marke, Modell, Baujahr, Farbe, ...)&lt;/div&gt;&quot;);</span>
+<span class="nc" id="L48">        carSearchBrand.setWidth(&quot;80%&quot;);</span>
+
+
+
+
+
+
+<span class="nc" id="L55">        this.addComponents(menuBandUser, carSearchBrand);</span>
+<span class="nc" id="L56">        this.setComponentAlignment(carSearchBrand, Alignment.TOP_CENTER);</span>
+
+<span class="nc" id="L58">        onTheFlySearch(carSearchBrand.getValue());</span>
+        //Change Listener
+<span class="nc" id="L60">        carSearchBrand.addValueChangeListener(e-&gt; onTheFlySearch(carSearchBrand.getValue()));</span>
+
+<span class="nc" id="L62">    }</span>
+
+    public void onTheFlySearch(String name){
+
+<span class="nc" id="L66">        carsGrid.setSizeUndefined();</span>
+<span class="nc" id="L67">        List&lt;Cars&gt; listedCars = null;</span>
+
+<span class="nc" id="L69">        String search [] = new String[1];</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if(name.isEmpty()){</span>
+<span class="nc" id="L72">            search[0] =&quot;&quot;;</span>
+        }
+        else{
+<span class="nc" id="L75">            search = name.split(&quot; &quot;);</span>
+        }
+        try {
+<span class="nc" id="L78">            listedCars = sc.searchCars(search);</span>
+<span class="nc" id="L79">        } catch (SQLException ex) {</span>
+<span class="nc" id="L80">            Logger.getLogger(Landing.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L81">        }</span>
+<span class="nc" id="L82">        carsGrid.removeAllColumns();</span>
+<span class="nc" id="L83">        carsGrid.setCaptionAsHtml(true);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        carsGrid.setCaption((search[0].equals(&quot;&quot;) ? &quot;Alle Autos:&quot; : &quot;Ergebnisse für: &quot; + name) + &quot; &lt;/span&gt;&quot;);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        carsGrid.setHeightByRows(!listedCars.isEmpty() ? listedCars.size() : 1);</span>
+<span class="nc" id="L86">        carsGrid.setBodyRowHeight(320);</span>
+<span class="nc" id="L87">        carsGrid.setItems(listedCars);</span>
+
+
+        //Befüllung des Grids
+<span class="nc" id="L91">        carsGrid.addComponentColumn(c -&gt; {</span>
+<span class="nc" id="L92">            Image image = new Image(&quot;&quot;, ImageUploader.carPicture(c.getCarPicture()));</span>
+<span class="nc" id="L93">            image.setWidth(300, Unit.PIXELS);</span>
+<span class="nc" id="L94">            return image;</span>
+<span class="nc" id="L95">        }).setCaption(&quot;Bild:&quot;).setWidth(300);</span>
+<span class="nc" id="L96">        carsGrid.addColumn(Cars::getCarBrand).setCaption(&quot;Marke:&quot;);</span>
+<span class="nc" id="L97">        carsGrid.addColumn(Cars::getCarYear).setCaption(&quot;Erstzulassung:&quot;);</span>
+<span class="nc" id="L98">        carsGrid.addColumn(Cars::getCarDescription, new HtmlRenderer()).setCaption(&quot;Beschreibung:&quot;);</span>
+
+<span class="nc" id="L100">        final ButtonRenderer&lt;Cars&gt; buttonShow = new ButtonRenderer&lt;&gt;(clickEvent -&gt; {</span>
+            try {
+<span class="nc" id="L102">                CarAddEditViewWindow carView = new CarAddEditViewWindow();</span>
+<span class="nc" id="L103">                carView.carView(clickEvent.getItem().getCarID());</span>
+<span class="nc" id="L104">                UI.getCurrent().addWindow(carView);</span>
+<span class="nc" id="L105">            } catch (Exception ex) {</span>
+<span class="nc" id="L106">                Logger.getLogger(Landing.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L107">            }</span>
+<span class="nc" id="L108">        });</span>
+<span class="nc" id="L109">        buttonShow.setHtmlContentAllowed(true);</span>
+<span class="nc" id="L110">        carsGrid.addColumn(cars -&gt; VaadinIcons.EYE.getHtml(), buttonShow);</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if(user.getRolle().equals(Roles.KUNDE)){</span>
+<span class="nc" id="L113">            final ButtonRenderer&lt;Cars&gt; buttonReservieren = new ButtonRenderer&lt;&gt;(clickEvent -&gt; {</span>
+                try {
+<span class="nc" id="L115">                    ReservationWindow resWindow = new ReservationWindow(clickEvent.getItem().getCarID());</span>
+<span class="nc" id="L116">                    UI.getCurrent().addWindow(resWindow);</span>
+<span class="nc" id="L117">                } catch (Exception ex) {</span>
+<span class="nc" id="L118">                    Logger.getLogger(Landing.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L119">                }</span>
+<span class="nc" id="L120">            });</span>
+<span class="nc" id="L121">            buttonReservieren.setHtmlContentAllowed(true);</span>
+<span class="nc" id="L122">            carsGrid.addColumn(cars -&gt; &quot;Reservieren&quot;, buttonReservieren);</span>
+        }
+
+<span class="nc" id="L125">        carsGrid.setWidth(&quot;80%&quot;);</span>
+<span class="nc" id="L126">        this.addComponents(carsGrid);</span>
+<span class="nc" id="L127">        this.setComponentAlignment(carsGrid, Alignment.TOP_CENTER);</span>
+
+<span class="nc" id="L129">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

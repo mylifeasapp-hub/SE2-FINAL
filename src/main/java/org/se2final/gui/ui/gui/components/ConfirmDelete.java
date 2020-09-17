@@ -78,12 +78,14 @@ public class ConfirmDelete extends Window {
             }
             if(checkPassword == true && user.getRolle().equals(Roles.KUNDE)){
                 UserDAO.getInstance().deleteCustomer(user.getId());
-                Notification.show("Profil wurde erfolgreich gelöscht!", "", Notification.Type.HUMANIZED_MESSAGE);
+                Notification deleteError = Notification.show("Profil wurde erfolgreich gelöscht!", "", Notification.Type.HUMANIZED_MESSAGE);
+                deleteError.setStyleName("error");
                 LoginCheck.logoutUser();
             }
             else if(checkPassword == true && user.getRolle().equals(Roles.MITARBEITER)){
                 UserDAO.getInstance().deleteWorker(user.getId());
-                Notification.show("Profil wurde erfolgreich gelöscht!", "", Notification.Type.HUMANIZED_MESSAGE);
+                Notification deleteError2 = Notification.show("Profil wurde erfolgreich gelöscht!", "", Notification.Type.HUMANIZED_MESSAGE);
+                deleteError2.setStyleName("error");
                 LoginCheck.logoutUser();
             }
             else{

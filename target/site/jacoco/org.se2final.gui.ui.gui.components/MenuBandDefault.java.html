@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MenuBandDefault.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.gui.ui.gui.components</a> &gt; <span class="el_source">MenuBandDefault.java</span></div><h1>MenuBandDefault.java</h1><pre class="source lang-java linenums">package org.se2final.gui.ui.gui.components;
+
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.*;
+
+public class MenuBandDefault extends HorizontalLayout {
+<span class="nc" id="L7">    public MenuBandDefault(){</span>
+<span class="nc" id="L8">        HorizontalLayout buttonPannel = new HorizontalLayout();</span>
+<span class="nc" id="L9">        this.setSizeFull();</span>
+<span class="nc" id="L10">        this.setHeight(&quot;100px&quot;);</span>
+<span class="nc" id="L11">        this.addStyleName(&quot;border_bottom&quot;);</span>
+
+<span class="nc" id="L13">        Label pageTitle = new Label(&quot;&lt;div style=\&quot;font-size:50px\&quot;&gt;CARPOOL by CarLook Ltd.&lt;/div&gt;&quot;, ContentMode.HTML);</span>
+
+<span class="nc" id="L15">        Button buttonRegister = new Button(&quot;Registrieren&quot;);</span>
+<span class="nc" id="L16">        Button buttonLogin = new Button(&quot;Anmelden&quot;);</span>
+
+<span class="nc" id="L18">        buttonPannel.addComponents(buttonLogin, buttonRegister);</span>
+<span class="nc" id="L19">        this.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);</span>
+<span class="nc" id="L20">        this.addComponents(pageTitle,buttonPannel);</span>
+<span class="nc" id="L21">        this.setComponentAlignment(pageTitle, Alignment.MIDDLE_LEFT);</span>
+
+        //Click Listener
+<span class="nc" id="L24">        LoginWindow loginPanel = new LoginWindow();</span>
+<span class="nc" id="L25">        buttonLogin.addClickListener(event -&gt; UI.getCurrent().addWindow(loginPanel));</span>
+<span class="nc" id="L26">        RegisterEditProfileWindow registerPanel = new RegisterEditProfileWindow();</span>
+<span class="nc" id="L27">        buttonRegister.addClickListener(event -&gt; UI.getCurrent().addWindow(registerPanel));</span>
+<span class="nc" id="L28">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

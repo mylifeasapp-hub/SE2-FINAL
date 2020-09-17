@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarsDAO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.model.objects.dao</a> &gt; <span class="el_source">CarsDAO.java</span></div><h1>CarsDAO.java</h1><pre class="source lang-java linenums">package org.se2final.model.objects.dao;
+
+import com.vaadin.server.VaadinService;
+import org.junit.jupiter.engine.discovery.predicates.IsTestClassWithTests;
+import org.se2final.control.HashFunktionsKlasse;
+import org.se2final.model.objects.dto.Cars;
+import org.se2final.model.objects.dto.Reservation;
+import org.se2final.model.objects.dto.User;
+
+import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class CarsDAO extends AbstractDAO {
+<span class="nc" id="L21">    private static CarsDAO dao = null;</span>
+<span class="nc" id="L22">    private  CarsDAO(){</span>
+
+<span class="nc" id="L24">    }</span>
+    public static CarsDAO getInstance(){
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if(dao == null){</span>
+<span class="nc" id="L27">            dao = new CarsDAO();</span>
+        }
+<span class="nc" id="L29">        return dao;</span>
+    }
+
+    public void enterCar(Cars newCar){
+<span class="nc" id="L33">        String sql = &quot;insert into carpool.cars (car_year, car_description, car_brand, car_picture, car_reg_user_id, car_modell, car_ps, car_maxspeed) values (?,?,?,?,?,?,?,?)&quot;;</span>
+<span class="nc" id="L34">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+
+        //Angaben in cars schreiben
+        try{
+<span class="nc" id="L38">            statement.setString(1, newCar.getCarYear());</span>
+<span class="nc" id="L39">            statement.setString(2, newCar.getCarDescription());</span>
+<span class="nc" id="L40">            statement.setString(3, newCar.getCarBrand());</span>
+<span class="nc" id="L41">            statement.setString(4, newCar.getCarPicture());</span>
+<span class="nc" id="L42">            statement.setInt(5, newCar.getOwnerID());</span>
+<span class="nc" id="L43">            statement.setString(6, newCar.getCarModel());</span>
+<span class="nc" id="L44">            statement.setInt(7, newCar.getCarPS());</span>
+<span class="nc" id="L45">            statement.setInt(8, newCar.getCarMaxSpeed());</span>
+
+<span class="nc" id="L47">            statement.executeUpdate();</span>
+
+<span class="nc" id="L49">        } catch(SQLException ex){</span>
+<span class="nc" id="L50">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L51">        }</span>
+<span class="nc" id="L52">    }</span>
+
+    public List&lt;Cars&gt; carsByUser(User ownerUser) throws SQLException {
+<span class="nc" id="L55">        List&lt;Cars&gt; carsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L56">        String sql = &quot;Select * from carpool.cars where car_reg_user_id=?&quot;;</span>
+<span class="nc" id="L57">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+<span class="nc" id="L58">        statement.setInt(1, ownerUser.getId());</span>
+        //Ausgabe der Autos
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if(statement==null) return Collections.emptyList();</span>
+
+<span class="nc" id="L62">        try(ResultSet rs = statement.executeQuery()){</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            if(rs == null) return Collections.emptyList();</span>
+
+<span class="nc bnc" id="L65" title="All 2 branches missed.">            while(rs.next()){</span>
+<span class="nc" id="L66">                Cars carTemp = new Cars();</span>
+
+<span class="nc" id="L68">                carTemp.setCarID(rs.getInt(1));</span>
+<span class="nc" id="L69">                carTemp.setCarYear(rs.getString(2));</span>
+<span class="nc" id="L70">                carTemp.setCarDescription(rs.getString(3));</span>
+<span class="nc" id="L71">                carTemp.setCarBrand(rs.getString(4));</span>
+<span class="nc" id="L72">                carTemp.setCarPicture(rs.getString(5));</span>
+<span class="nc" id="L73">                carTemp.setOwnerID(rs.getInt(6));</span>
+<span class="nc" id="L74">                carTemp.setCarModel(rs.getString(7));</span>
+<span class="nc" id="L75">                carTemp.setCarPS((rs.getInt(8)));</span>
+<span class="nc" id="L76">                carTemp.setCarMaxSpeed(rs.getInt(9));</span>
+
+<span class="nc" id="L78">                carsList.add(carTemp);</span>
+<span class="nc" id="L79">            }</span>
+
+
+<span class="nc bnc" id="L82" title="All 12 branches missed.">        } catch(SQLException ex){</span>
+<span class="nc" id="L83">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L84">        }</span>
+<span class="nc" id="L85">        return carsList;</span>
+    }
+
+    public List&lt;Cars&gt; carsComplete() throws SQLException {
+<span class="nc" id="L89">        List&lt;Cars&gt; carsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L90">        String sql = &quot;Select * from carpool.cars&quot;;</span>
+<span class="nc" id="L91">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+
+        //Ausgabe der Autos
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if(statement==null) return Collections.emptyList();</span>
+
+<span class="nc" id="L96">        try(ResultSet rs = statement.executeQuery()){</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            if(rs == null) return Collections.emptyList();</span>
+
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            while(rs.next()){</span>
+<span class="nc" id="L100">                Cars carTemp = new Cars();</span>
+
+<span class="nc" id="L102">                carTemp.setCarID(rs.getInt(1));</span>
+<span class="nc" id="L103">                carTemp.setOwnerID(rs.getInt(6));</span>
+<span class="nc" id="L104">                carTemp.setCarYear(rs.getString(2));</span>
+<span class="nc" id="L105">                carTemp.setCarDescription(rs.getString(3));</span>
+<span class="nc" id="L106">                carTemp.setCarBrand(rs.getString(4));</span>
+<span class="nc" id="L107">                carTemp.setCarPicture(rs.getString(5));</span>
+
+<span class="nc" id="L109">                carsList.add(carTemp);</span>
+<span class="nc" id="L110">            }</span>
+
+
+<span class="nc bnc" id="L113" title="All 12 branches missed.">        } catch(SQLException ex){</span>
+<span class="nc" id="L114">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L115">        }</span>
+<span class="nc" id="L116">        return carsList;</span>
+    }
+
+    //Für StellenangebotSuchenView
+    public List&lt;Cars&gt; searchCars(String search []) throws SQLException {
+<span class="nc" id="L121">        PreparedStatement statement = searchCarsStatement(search);</span>
+<span class="nc" id="L122">        List&lt;Cars&gt; carsList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L123">        return searchCarsList(carsList, statement);</span>
+    }
+    public PreparedStatement searchCarsStatement(String search []) throws SQLException {
+<span class="nc" id="L126">        String basic = &quot;SELECT * FROM carpool.cars&quot;;</span>
+        PreparedStatement statement;
+        String input;
+
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if(search[0].equals(&quot;&quot;)){</span>
+<span class="nc" id="L131">            statement = this.getPreparedStatement(basic);</span>
+        }
+        else{
+<span class="nc" id="L134">            String source = &quot; and concat_ws(upper(car_brand), upper(car_description), upper(car_year), car_ps, car_maxspeed, upper(car_modell)) like '&quot;;</span>
+<span class="nc" id="L135">            String sql = &quot;select * from carpool.cars where concat_ws(upper(car_brand), upper(car_description), upper(car_year), car_ps, car_maxspeed, upper(car_modell)) like '%&quot;+search[0].toUpperCase()+&quot;%'&quot;;</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">            for(int i = 1; i&lt;search.length; i++){</span>
+<span class="nc" id="L137">                input = source + &quot;%&quot;+search[i].toUpperCase()+&quot;%' &quot;;</span>
+<span class="nc" id="L138">                sql = sql + input;</span>
+            }
+<span class="nc" id="L140">            statement = this.getPreparedStatement(sql+&quot;;&quot;);</span>
+        }
+
+
+<span class="nc" id="L144">        return statement;</span>
+    }
+
+    private List&lt;Cars&gt; searchCarsList(List&lt;Cars&gt; carsList, PreparedStatement statement) {
+<span class="nc" id="L148">        try(ResultSet rs = statement.executeQuery()){</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            if(rs == null) return Collections.emptyList();</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">            while(rs.next()) carsList.add(getCar(rs));</span>
+<span class="nc bnc" id="L151" title="All 12 branches missed.">        }catch(SQLException ex){</span>
+<span class="nc" id="L152">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L153">        }</span>
+<span class="nc" id="L154">        return carsList;</span>
+    }
+
+    private Cars getCar(ResultSet rs) throws SQLException {
+<span class="nc" id="L158">        Cars carTemp = new Cars();</span>
+
+<span class="nc" id="L160">        carTemp.setCarID(rs.getInt(1));</span>
+<span class="nc" id="L161">        carTemp.setOwnerID(rs.getInt(6));</span>
+<span class="nc" id="L162">        carTemp.setCarYear(rs.getString(2));</span>
+<span class="nc" id="L163">        carTemp.setCarDescription(rs.getString(3));</span>
+<span class="nc" id="L164">        carTemp.setCarBrand(rs.getString(4));</span>
+<span class="nc" id="L165">        carTemp.setCarPicture(rs.getString(5));</span>
+<span class="nc" id="L166">        carTemp.setCarModel(rs.getString(7));</span>
+<span class="nc" id="L167">        carTemp.setCarPS(rs.getInt(8));</span>
+<span class="nc" id="L168">        carTemp.setCarMaxSpeed(rs.getInt(9));</span>
+
+<span class="nc" id="L170">        return carTemp;</span>
+    }
+
+    public Cars getCarByID(int currentCar) throws SQLException {
+<span class="nc" id="L174">        String sql = &quot;Select * from carpool.cars where car_id=?&quot;;</span>
+<span class="nc" id="L175">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+<span class="nc" id="L176">        statement.setInt(1, currentCar);</span>
+        //Ausgabe der Autos
+<span class="nc" id="L178">        Cars carTemp = new Cars();</span>
+<span class="nc" id="L179">        try(ResultSet rs = statement.executeQuery()){</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            if(rs == null) return null;</span>
+
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            while(rs.next()){</span>
+<span class="nc" id="L183">                carTemp.setCarID(rs.getInt(1));</span>
+<span class="nc" id="L184">                carTemp.setCarYear(rs.getString(2));</span>
+<span class="nc" id="L185">                carTemp.setCarDescription(rs.getString(3));</span>
+<span class="nc" id="L186">                carTemp.setCarBrand(rs.getString(4));</span>
+<span class="nc" id="L187">                carTemp.setCarPicture(rs.getString(5));</span>
+<span class="nc" id="L188">                carTemp.setOwnerID(rs.getInt(6));</span>
+<span class="nc" id="L189">                carTemp.setCarModel(rs.getString(7));</span>
+<span class="nc" id="L190">                carTemp.setCarPS((rs.getInt(8)));</span>
+<span class="nc" id="L191">                carTemp.setCarMaxSpeed(rs.getInt(9));</span>
+            }
+
+
+<span class="nc bnc" id="L195" title="All 12 branches missed.">        } catch(SQLException ex){</span>
+<span class="nc" id="L196">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L197">        }</span>
+<span class="nc" id="L198">        return carTemp;</span>
+    }
+
+    public void updateCar(Cars currentCar){
+<span class="nc" id="L202">        String sql =    &quot;update carpool.cars set &quot; +</span>
+<span class="nc" id="L203">                &quot;car_year= '&quot;+currentCar.getCarYear()+&quot;', &quot; +</span>
+<span class="nc" id="L204">                &quot;car_description = '&quot; + currentCar.getCarDescription()+&quot;', &quot; +</span>
+<span class="nc" id="L205">                &quot;car_brand = '&quot; + currentCar.getCarBrand()+&quot;', &quot; +</span>
+<span class="nc" id="L206">                &quot;car_picture = '&quot; + currentCar.getCarPicture()+&quot;', &quot; +</span>
+<span class="nc" id="L207">                &quot;car_modell = '&quot; + currentCar.getCarModel()+&quot;', &quot; +</span>
+<span class="nc" id="L208">                &quot;car_ps = '&quot; + currentCar.getCarPS()+&quot;', &quot; +</span>
+<span class="nc" id="L209">                &quot;car_maxspeed = '&quot; + currentCar.getCarMaxSpeed()+&quot;' &quot; +</span>
+<span class="nc" id="L210">                &quot;where car_id = &quot;+currentCar.getCarID()+&quot;;&quot;;</span>
+
+<span class="nc" id="L212">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+
+        //Angaben in cars schreiben
+        try{
+<span class="nc" id="L216">            statement.execute();</span>
+
+<span class="nc" id="L218">        } catch(SQLException ex){</span>
+<span class="nc" id="L219">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L220">        }</span>
+<span class="nc" id="L221">    }</span>
+
+    public void deleteCar(int carID){
+<span class="nc" id="L224">        String sql =    &quot;delete from carpool.reservation where car_id = &quot;+carID+&quot;;&quot; +</span>
+                        &quot;delete from carpool.cars where car_id = &quot;+carID+&quot;;&quot;;
+
+<span class="nc" id="L227">        PreparedStatement statement = this.getPreparedStatement(sql);</span>
+<span class="nc" id="L228">        Cars tempCar = null;</span>
+        //Bild löschen
+        try {
+<span class="nc" id="L231">            tempCar = CarsDAO.getInstance().getCarByID(carID);</span>
+<span class="nc" id="L232">        } catch (SQLException ex) {</span>
+<span class="nc" id="L233">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L234">        }</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        if(!tempCar.getCarPicture().isEmpty()){</span>
+<span class="nc" id="L236">            File image = new File(VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() +&quot;/WEB-INF/cars/&quot;+tempCar.getCarPicture()+&quot;.jpg&quot;);</span>
+<span class="nc" id="L237">            image.delete();</span>
+        }
+        //Auto löschen
+        try{
+<span class="nc" id="L241">            statement.execute();</span>
+
+<span class="nc" id="L243">        } catch(SQLException ex){</span>
+<span class="nc" id="L244">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L245">        }</span>
+<span class="nc" id="L246">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

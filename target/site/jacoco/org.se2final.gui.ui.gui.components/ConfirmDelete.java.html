@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConfirmDelete.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.gui.ui.gui.components</a> &gt; <span class="el_source">ConfirmDelete.java</span></div><h1>ConfirmDelete.java</h1><pre class="source lang-java linenums">package org.se2final.gui.ui.gui.components;
+
+
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.*;
+import org.se2final.control.HashFunktionsKlasse;
+import org.se2final.control.LoginCheck;
+import org.se2final.control.exceptions.DatabaseException;
+import org.se2final.gui.ui.service.konstanten.Roles;
+import org.se2final.model.objects.dao.UserDAO;
+import org.se2final.model.objects.dto.User;
+import org.se2final.service.db.JDBCConnection;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ConfirmDelete extends Window {
+<span class="nc" id="L22">    User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);</span>
+<span class="nc" id="L23">    public ConfirmDelete(){</span>
+<span class="nc" id="L24">        this.setCaption(&quot;Account löschen:&quot;);</span>
+
+<span class="nc" id="L26">        Label deleteHint = new Label();</span>
+<span class="nc" id="L27">        deleteHint.setContentMode(ContentMode.HTML);</span>
+
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if(user.getRolle().equals(Roles.MITARBEITER)){</span>
+<span class="nc" id="L30">            deleteHint.setValue(&quot;Sind Sie sicher, dass Sie ihren Account löschen wollen?&lt;/br&gt;Folgende Inhalte werden mit Ihrem Account gelöscht:&lt;/br&gt;&lt;ul&gt;&lt;li&gt;Reservierungen&lt;/li&gt;&lt;li&gt;Autos&lt;/li&gt;&lt;li&gt;Profil&lt;/li&gt;&lt;/ul&gt;&quot; +</span>
+                    &quot;Die Löschung ist unwiederruflich!&quot;);
+        }else {
+<span class="nc" id="L33">            deleteHint.setValue(&quot;Sind Sie sicher, dass Sie ihren Account löschen wollen?&lt;/br&gt;Folgende Inhalte werden mit Ihrem Account gelöscht:&lt;/br&gt;&lt;ul&gt;&lt;li&gt;Reservierungen&lt;/li&gt;&lt;li&gt;Profil&lt;/li&gt;&lt;/ul&gt;&quot; +</span>
+                    &quot;Die Löschung ist unwiederruflich!&quot;);
+        }
+
+<span class="nc" id="L37">        PasswordField confirmPassword = new PasswordField(&quot;Passwort zur bestätigung eingeben:&quot;);</span>
+
+<span class="nc" id="L39">        Button deleteButton = new Button(&quot;Löschen&quot;);</span>
+<span class="nc" id="L40">        Button exitButton = new Button(&quot;Abbrechen&quot;);</span>
+
+<span class="nc" id="L42">        HorizontalLayout buttonPane = new HorizontalLayout();</span>
+<span class="nc" id="L43">        buttonPane.setDefaultComponentAlignment(Alignment.TOP_CENTER);</span>
+<span class="nc" id="L44">        buttonPane.addComponents(deleteButton, exitButton);</span>
+
+<span class="nc" id="L46">        FormLayout content = new FormLayout();</span>
+<span class="nc" id="L47">        content.setDefaultComponentAlignment(Alignment.TOP_CENTER);</span>
+
+<span class="nc" id="L49">        content.addComponents(deleteHint, confirmPassword, buttonPane);</span>
+
+<span class="nc" id="L51">        content.setSizeUndefined(); // Shrink to fit</span>
+<span class="nc" id="L52">        content.setMargin(true);</span>
+<span class="nc" id="L53">        setContent(content);</span>
+<span class="nc" id="L54">        center();</span>
+<span class="nc" id="L55">        setClosable(false);</span>
+<span class="nc" id="L56">        setResizable(false);</span>
+<span class="nc" id="L57">        setModal(true);</span>
+
+<span class="nc" id="L59">        exitButton.addClickListener(event -&gt; this.close());</span>
+<span class="nc" id="L60">        deleteButton.addClickListener(event -&gt; {</span>
+<span class="nc" id="L61">            Boolean checkPassword = null;</span>
+<span class="nc" id="L62">            String sql = &quot;SELECT * FROM carpool.reg_user WHERE carpool.reg_user.reg_user_email = '&quot;+user.getEmail()+&quot;' AND carpool.reg_user.reg_user_passwort = '&quot;+HashFunktionsKlasse.getHash(confirmPassword.getValue().getBytes(), &quot;MD5&quot;)+&quot;'&quot;;</span>
+<span class="nc" id="L63">            PreparedStatement statement = null;</span>
+            try {
+<span class="nc" id="L65">                statement = JDBCConnection.getInstance().getPreparedStatement(sql);</span>
+<span class="nc" id="L66">            } catch (DatabaseException e) {</span>
+<span class="nc" id="L67">                e.printStackTrace();</span>
+<span class="nc" id="L68">            }</span>
+
+<span class="nc" id="L70">            try(ResultSet set = statement.executeQuery()){</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                if(set.next()){</span>
+<span class="nc" id="L72">                    checkPassword = true;</span>
+                }else{
+<span class="nc" id="L74">                    checkPassword = false;</span>
+                }
+<span class="nc bnc" id="L76" title="All 8 branches missed.">            } catch(SQLException ex){</span>
+<span class="nc" id="L77">                Logger.getLogger(LoginCheck.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L78">            }</span>
+<span class="nc bnc" id="L79" title="All 4 branches missed.">            if(checkPassword == true &amp;&amp; user.getRolle().equals(Roles.KUNDE)){</span>
+<span class="nc" id="L80">                UserDAO.getInstance().deleteCustomer(user.getId());</span>
+<span class="nc" id="L81">                Notification deleteError = Notification.show(&quot;Profil wurde erfolgreich gelöscht!&quot;, &quot;&quot;, Notification.Type.HUMANIZED_MESSAGE);</span>
+<span class="nc" id="L82">                deleteError.setStyleName(&quot;error&quot;);</span>
+<span class="nc" id="L83">                LoginCheck.logoutUser();</span>
+<span class="nc" id="L84">            }</span>
+<span class="nc bnc" id="L85" title="All 4 branches missed.">            else if(checkPassword == true &amp;&amp; user.getRolle().equals(Roles.MITARBEITER)){</span>
+<span class="nc" id="L86">                UserDAO.getInstance().deleteWorker(user.getId());</span>
+<span class="nc" id="L87">                Notification deleteError2 = Notification.show(&quot;Profil wurde erfolgreich gelöscht!&quot;, &quot;&quot;, Notification.Type.HUMANIZED_MESSAGE);</span>
+<span class="nc" id="L88">                deleteError2.setStyleName(&quot;error&quot;);</span>
+<span class="nc" id="L89">                LoginCheck.logoutUser();</span>
+<span class="nc" id="L90">            }</span>
+            else{
+<span class="nc" id="L92">                Notification.show(&quot;Fehler:&quot;,&quot;Passwort falsch, versuchen Sie es erneut!&quot;, Notification.Type.ERROR_MESSAGE);</span>
+            }
+<span class="nc" id="L94">        });</span>
+
+<span class="nc" id="L96">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

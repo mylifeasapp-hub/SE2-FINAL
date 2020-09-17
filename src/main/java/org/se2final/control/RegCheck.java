@@ -1,7 +1,6 @@
 package org.se2final.control;
 
 import org.se2final.control.exceptions.DatabaseException;
-import org.se2final.model.objects.dto.User;
 import org.se2final.service.db.JDBCConnection;
 
 import java.sql.PreparedStatement;

@@ -12,6 +12,7 @@ import org.se2final.model.objects.dto.User;
 public class Menu extends MenuBar {
     User user = (User) VaadinSession.getCurrent().getAttribute(Roles.CURRENT);
     public Menu(){
+        this.addStyleName("menu");
         MenuBar.MenuItem item1 = this.addItem("", VaadinIcons.MENU, null);
 
         item1.addItem("Mein Profil", VaadinIcons.SPECIALIST, (MenuBar.Command) menuItem -> {

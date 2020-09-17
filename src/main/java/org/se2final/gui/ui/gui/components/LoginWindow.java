@@ -18,10 +18,9 @@ public class LoginWindow extends Window {
         FormLayout content = new FormLayout();
 
         TextField emailField = new TextField("E-Mail Adresse:");
-        emailField.setValue("E-Mail Adresse hier eingeben...");
 
         PasswordField passwordField = new PasswordField("Passwort:");
-        passwordField.setValue("Passwort");
+
 
         HorizontalLayout buttonPane = new HorizontalLayout();
         Button loginButton = new Button("Anmelden");
@@ -60,9 +59,11 @@ public class LoginWindow extends Window {
                 }
 
                 if(registered == true){
-                    Notification.show("Fehler:", "Zur eingegebenen E-Mail Adresse existiert kein Konto!", Notification.Type.ERROR_MESSAGE);
+                    Notification wrongMail = Notification.show("Fehler:", "Zur eingegebenen E-Mail Adresse existiert kein Konto!", Notification.Type.ERROR_MESSAGE);
+                    wrongMail.setStyleName("error");
                 }else {
-                    Notification.show("Fehler:", "Das eingegebene Passwort ist falsch!", Notification.Type.ERROR_MESSAGE);
+                    Notification wrongPassword = Notification.show("Fehler:", "Das eingegebene Passwort ist falsch!", Notification.Type.ERROR_MESSAGE);
+                    wrongPassword.setStyleName("error");
                 }
 
                 emailField.setValue("");

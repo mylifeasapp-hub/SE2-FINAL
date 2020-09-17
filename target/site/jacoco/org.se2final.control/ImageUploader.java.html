@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="de"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ImageUploader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CARPOOL</a> &gt; <a href="index.source.html" class="el_package">org.se2final.control</a> &gt; <span class="el_source">ImageUploader.java</span></div><h1>ImageUploader.java</h1><pre class="source lang-java linenums">package org.se2final.control;
+
+import com.vaadin.server.FileResource;
+import com.vaadin.server.VaadinService;
+import org.se2final.control.exceptions.DatabaseException;
+import org.se2final.gui.ui.views.MyCars;
+import org.se2final.model.objects.dao.AbstractDAO;
+import org.se2final.model.objects.dao.CarsDAO;
+import org.se2final.model.objects.dto.Cars;
+import org.se2final.service.db.JDBCConnection;
+
+
+import java.io.File;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+<span class="nc" id="L20">public class ImageUploader extends AbstractDAO {</span>
+    String sql;
+
+    public int getPicture(int carID) throws DatabaseException, SQLException {
+<span class="nc" id="L24">        sql = &quot;SELECT * FROM carpool.cars WHERE car_id = ?&quot;;</span>
+<span class="nc" id="L25">        PreparedStatement statement = JDBCConnection.getInstance().getPreparedStatement(sql);</span>
+<span class="nc" id="L26">        statement.setInt(1, carID);</span>
+<span class="nc" id="L27">        try(ResultSet set = statement.executeQuery()){</span>
+<span class="nc" id="L28">            int tmp = 0;</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if(set.next()) {</span>
+<span class="nc" id="L30">                tmp = set.getInt(8);</span>
+            }
+<span class="nc" id="L32">            return tmp;</span>
+<span class="nc bnc" id="L33" title="All 8 branches missed.">        }catch(SQLException ex){</span>
+<span class="nc" id="L34">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L35">            return -1;</span>
+        }
+    }
+
+    public void setPicture(int id, int counter) throws DatabaseException {
+<span class="nc" id="L40">        sql = &quot;UPDATE coll_at_hbrs.user SET bild_id = ? WHERE benutzerid = ?&quot;;</span>
+
+<span class="nc" id="L42">        try(PreparedStatement statement = this.getPreparedStatement(sql)){</span>
+<span class="nc" id="L43">            statement.setInt(1, counter);</span>
+<span class="nc" id="L44">            statement.setInt(2, id);</span>
+<span class="nc" id="L45">            statement.executeUpdate();</span>
+<span class="nc bnc" id="L46" title="All 8 branches missed.">        }catch(SQLException ex){</span>
+<span class="nc" id="L47">            Logger.getLogger(CarsDAO.class.getName()).log(Level.SEVERE, null, ex);</span>
+<span class="nc" id="L48">        }</span>
+<span class="nc" id="L49">    }</span>
+
+    public static FileResource carPicture(String fileName){
+<span class="nc" id="L52">        ImageUploader data = new ImageUploader();</span>
+<span class="nc" id="L53">        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath() +&quot;/&quot;;</span>
+<span class="nc" id="L54">        FileResource resourcePicture = null;</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if(fileName.isEmpty()) {</span>
+<span class="nc" id="L56">            resourcePicture = new FileResource(new File(basepath + &quot;WEB-INF/images/stock.png&quot;));</span>
+        } else {
+<span class="nc" id="L58">            resourcePicture = new FileResource(new File(basepath + &quot;WEB-INF/cars/&quot; + fileName + &quot;.jpg&quot;));</span>
+        }
+<span class="nc" id="L60">        return resourcePicture;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.7.8.201612092310</span></div></body></html>

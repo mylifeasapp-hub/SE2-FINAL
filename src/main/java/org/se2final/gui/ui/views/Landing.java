@@ -55,14 +55,13 @@ public class Landing extends VerticalLayout implements View {
         this.addComponents(menuBandUser, carSearchBrand);
         this.setComponentAlignment(carSearchBrand, Alignment.TOP_CENTER);
 
-        OnTheFlySearch(carSearchBrand.getValue());
+        onTheFlySearch(carSearchBrand.getValue());
         //Change Listener
-        carSearchBrand.addValueChangeListener(e-> OnTheFlySearch(carSearchBrand.getValue()));
+        carSearchBrand.addValueChangeListener(e-> onTheFlySearch(carSearchBrand.getValue()));
 
     }
 
-    public void OnTheFlySearch(String name){
-        //Erstellung Tabelle mit Jobangeboten
+    public void onTheFlySearch(String name){
 
         carsGrid.setSizeUndefined();
         List<Cars> listedCars = null;
