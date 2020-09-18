@@ -100,7 +100,6 @@ public class RegisterEditProfileWindow extends Window {
                         newUser.setPasswort(passwordField.getValue());
                         newUser.setRolle(roleField.getValue());
 
-                        System.out.println("Angelegt!");
                         UserDAO.getInstance().registerUser(newUser);
                         Notification.show("Das Konto wurde erfolgreich erstellt!", "", Notification.Type.HUMANIZED_MESSAGE);
                         user = null;
@@ -137,7 +136,6 @@ public class RegisterEditProfileWindow extends Window {
                         }
 
                         if(countChanges>0) {
-                            System.out.println(user.getPasswort());
                             UserDAO.getInstance().updateUser(user);
                             Notification.show(countChanges + " Änderungen wurden erfolgreich gespeichert!", "", Notification.Type.HUMANIZED_MESSAGE);
                             UI.getCurrent().getNavigator().navigateTo(Views.LANDING);

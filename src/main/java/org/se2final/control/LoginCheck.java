@@ -50,7 +50,7 @@ public class LoginCheck {
 
     public static void logoutUser() {
         UI.getCurrent().getSession().close();
-        UI.getCurrent().getPage().setLocation("#!Startseite");
+        UI.getCurrent().getPage().setLocation("#!Start");
         UI.getCurrent().getPage().reload();
     }
 }
