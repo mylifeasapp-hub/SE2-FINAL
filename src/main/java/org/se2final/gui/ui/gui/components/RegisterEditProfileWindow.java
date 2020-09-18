@@ -64,61 +64,88 @@ public class RegisterEditProfileWindow extends Window {
             }catch (NullPointerException n){
                 n.printStackTrace();
             }
-
+            System.out.println(user);
             try {
-                user = null;
-                if (anredeField.getValue().isEmpty() || roleField.getValue().isEmpty() || nachnameField.getValue().isEmpty() ||
-                        vornameField.getValue().isEmpty() || emailField.getValue().isEmpty() || passwordField.getValue().isEmpty()) {
-                    if (user == null) {
+                if(user == null) {
+                    if (anredeField.getValue().isEmpty() || roleField.getValue().isEmpty() || nachnameField.getValue().isEmpty() ||
+                            vornameField.getValue().isEmpty() || emailField.getValue().isEmpty() || passwordField.getValue().isEmpty() ) {
                         Notification.show("Fehler:", "Bitte füllen Sie alle Felder aus!", Notification.Type.ERROR_MESSAGE);
-                    }
-                } else if (!passwordField.getValue().equals(passwordConfirmField.getValue())) {
-                    Notification.show("Fehler:", "Passwörter stimmen nicht überein!", Notification.Type.ERROR_MESSAGE);
-                    passwordField.setValue("");
-                    passwordConfirmField.setValue("");
-                } else if (passwordField.getValue().length() < 10 && user == null) {
-                    Notification.show("Fehler:", "Passwortlänge muss 10 Zeichen betragen!", Notification.Type.ERROR_MESSAGE);
-                    passwordField.setValue("");
-                    passwordConfirmField.setValue("");
-                } else if (user != null && passwordField.getValue().length() != 0 && passwordField.getValue().length() < 10) {
-                    Notification.show("Fehler:", "Passwortlänge muss 10 Zeichen betragen!", Notification.Type.ERROR_MESSAGE);
-                    passwordField.setValue("");
-                    passwordConfirmField.setValue("");
-                } else if (roleField.getValue().matches(Roles.MITARBEITER) && !emailField.getValue().contains("@carlook.de")) {
+                    } else if (!passwordField.getValue().equals(passwordConfirmField.getValue())) {
+                        Notification.show("Fehler:", "Passwörter stimmen nicht überein!", Notification.Type.ERROR_MESSAGE);
+                        passwordField.setValue("");
+                        passwordConfirmField.setValue("");
+                    } else if (passwordField.getValue().length() < 10) {
+                        Notification.show("Fehler:", "Passwortlänge muss 10 Zeichen betragen!", Notification.Type.ERROR_MESSAGE);
+                        passwordField.setValue("");
+                        passwordConfirmField.setValue("");
+                    } else if (passwordField.getValue().length() != 0 && passwordField.getValue().length() < 10) {
+                        Notification.show("Fehler:", "Passwortlänge muss 10 Zeichen betragen!", Notification.Type.ERROR_MESSAGE);
+                        passwordField.setValue("");
+                        passwordConfirmField.setValue("");
+                    } else if (roleField.getValue().matches(Roles.MITARBEITER) && !emailField.getValue().contains("@carlook.de")) {
 
-                    Notification.show("Fehler:", "Als Angestellter muss ihre E-Mail Adresse mit \"@carlook.de\" enden!", Notification.Type.ERROR_MESSAGE);
+                        Notification.show("Fehler:", "Als Angestellter muss ihre E-Mail Adresse mit \"@carlook.de\" enden!", Notification.Type.ERROR_MESSAGE);
 
-                } else if (RegCheck.isEmail(emailField.getValue()) == false) {
-                    Notification.show("Fehler:", "E-Mail Adresse hat kein gültiges Format!", Notification.Type.ERROR_MESSAGE);
-                    emailField.setValue("");
-                } else if (isRegistered == false && user == null) {
-                    Notification.show("Fehler:", "E-Mail Adresse ist bereits registriert!", Notification.Type.ERROR_MESSAGE);
-                } else {
-                    User newUser = new User();
-                    newUser.setGender(RegCheck.getGender(anredeField.getValue()));
-                    newUser.setName(vornameField.getValue());
-                    newUser.setSurname(nachnameField.getValue());
-                    newUser.setEmail(emailField.getValue());
-                    newUser.setPasswort(passwordField.getValue());
-                    newUser.setRolle(roleField.getValue());
-
-                    if (user != null) {
-                        newUser.setId(user.getId());
-                        VaadinSession.getCurrent().setAttribute(Roles.CURRENT, newUser);
-                        UserDAO.getInstance().updateUser(newUser);
-                        Notification.show("Die Änderungen wurden gespeichert!", "", Notification.Type.HUMANIZED_MESSAGE);
-                        UI.getCurrent().getNavigator().navigateTo(Views.LANDING);
+                    } else if (RegCheck.isEmail(emailField.getValue()) == false) {
+                        Notification.show("Fehler:", "E-Mail Adresse hat kein gültiges Format!", Notification.Type.ERROR_MESSAGE);
+                        emailField.setValue("");
+                    } else if (isRegistered == false) {
+                        Notification.show("Fehler:", "E-Mail Adresse ist bereits registriert!", Notification.Type.ERROR_MESSAGE);
                     } else {
+                        User newUser = new User();
+                        newUser.setGender(RegCheck.getGender(anredeField.getValue()));
+                        newUser.setName(vornameField.getValue());
+                        newUser.setSurname(nachnameField.getValue());
+                        newUser.setEmail(emailField.getValue());
+                        newUser.setPasswort(passwordField.getValue());
+                        newUser.setRolle(roleField.getValue());
+
+                        System.out.println("Angelegt!");
                         UserDAO.getInstance().registerUser(newUser);
                         Notification.show("Das Konto wurde erfolgreich erstellt!", "", Notification.Type.HUMANIZED_MESSAGE);
                         user = null;
+                        this.close();
                         UI.getCurrent().getNavigator().navigateTo(Views.START);
-                    }
+                        }
+                }else{
+                        int countChanges = 0;
 
+                        user.setPasswort("");
 
-                    this.close();
+                        if(!user.getGender().equals(RegCheck.getGender(anredeField.getValue()))){
+                            ++countChanges;
+                            user.setGender(RegCheck.getGender(anredeField.getValue()));
 
+                        }else if(!user.getName().equals(vornameField.getValue())){
+                            ++countChanges;
+                            user.setName(vornameField.getValue());
+                        }else if(!user.getSurname().equals(nachnameField.getValue())){
+                            ++countChanges;
+                            user.setSurname(nachnameField.getValue());
+                        }else if(passwordField.getValue().length()!=0 && passwordConfirmField.getValue().equals(passwordField.getValue()) && passwordField.getValue().length() > 9){
+                            ++countChanges;
+                            user.setPasswort(passwordField.getValue());
+                        }
+                        else if(passwordField.getValue().length()!=0 && !passwordConfirmField.getValue().equals(passwordField.getValue())){
+                            Notification.show("Fehler:", "Passwörter stimmen nicht überein!", Notification.Type.ERROR_MESSAGE);
+                            passwordField.setValue("");
+                            passwordConfirmField.setValue("");
+                        }else if(passwordField.getValue().length()!=0 && passwordField.getValue().length() < 9){
+                            Notification.show("Fehler:", "Passwortlänge muss 10 Zeichen betragen!", Notification.Type.ERROR_MESSAGE);
+                            passwordField.setValue("");
+                            passwordConfirmField.setValue("");
+                        }
 
+                        if(countChanges>0) {
+                            System.out.println(user.getPasswort());
+                            UserDAO.getInstance().updateUser(user);
+                            Notification.show(countChanges + " Änderungen wurden erfolgreich gespeichert!", "", Notification.Type.HUMANIZED_MESSAGE);
+                            UI.getCurrent().getNavigator().navigateTo(Views.LANDING);
+                            this.close();
+                        }else {
+                            Notification.show("Es wurden keine Änderungen vorgenommen!", "", Notification.Type.HUMANIZED_MESSAGE);
+                            this.close();
+                        }
                 }
             }catch (NullPointerException nullPointerException){
                 Notification.show("Fehler:", "Bitte füllen Sie alle Felder aus!", Notification.Type.ERROR_MESSAGE);
